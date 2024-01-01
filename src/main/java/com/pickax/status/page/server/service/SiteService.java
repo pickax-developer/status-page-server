@@ -2,8 +2,12 @@ package com.pickax.status.page.server.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import com.pickax.status.page.server.dto.reseponse.DefaultSite;
+import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.jsoup.Jsoup;
@@ -82,5 +86,43 @@ public class SiteService {
 		}
 
 		throw new BadRequestException();
+	}
+
+	/**
+	 * TODO. 로그인 API 붙일 때 유저아이디로 조회
+	 * @param loggedInUserId
+	 * @return
+	 */
+	public List<DefaultSite> findAllByUserId(Long loggedInUserId) {
+//		List<Site> sitesFromRepository = this.siteRepository.findAllByUserId(loggedInUserId);
+		List<Site> sitesFromRepository = this.siteRepository.findAll();
+		List<DefaultSite> sites = new ArrayList<>();
+
+		sitesFromRepository.forEach(
+				site -> {
+					sites.add(DefaultSite.builder()
+							.id(site.getId())
+							.name(site.getName())
+							.url(site.getUrl())
+							.ownerProofStatus(site.getSiteRegistrationStatus())
+							.build());
+				}
+		);
+
+		return sites;
+	}
+
+	public MetaTagValidation findValidMetaTag(Long siteId) {
+		Site site = this.siteRepository.findById(siteId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사이트 입니다."));
+		if (site.hasValidatedOwnerByMetaTag()) {
+			throw new IllegalArgumentException("이미 소유권이 증명된 사이트 입니다.");
+		}
+
+		MetaTag metaTagNotYetChecked = this.metaTagRepository.findMetaTagNotYetCheckedBySiteId(siteId, false)
+				.stream()
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("메타태그가 존재하지 않습니다."));
+
+		return new MetaTagValidation(metaTagNotYetChecked.getId(), metaTagNotYetChecked.getContent());
 	}
 }
