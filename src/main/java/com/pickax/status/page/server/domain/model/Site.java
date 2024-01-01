@@ -17,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,10 @@ public class Site {
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<MetaTag> mataTags = new ArrayList<>();
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+
 	public void addMetaTag(MetaTag metaTag) {
 		this.mataTags.add(metaTag);
 		metaTag.updateSite(this);
@@ -68,5 +73,9 @@ public class Site {
 
 	public void complete() {
 		this.siteRegistrationStatus = SiteRegistrationStatus.COMPLETED;
+	}
+
+	public boolean hasValidatedOwnerByMetaTag() {
+		return SiteRegistrationStatus.COMPLETED.equals(this.siteRegistrationStatus);
 	}
 }
