@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pickax.status.page.server.dto.request.SiteRequestDto;
+import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
 import com.pickax.status.page.server.service.SiteService;
 
@@ -24,9 +24,9 @@ public class SiteController {
 
 	@PostMapping
 	public ResponseEntity<SiteResponseDto> createSite(
-		@RequestBody @Valid SiteRequestDto siteRequestDto
+		@RequestBody @Valid SiteCreateRequestDto siteCreateRequestDto
 	) {
-		SiteResponseDto serviceResponse = siteService.createSite(siteRequestDto);
-		return ResponseEntity.ok(serviceResponse);
+		SiteResponseDto siteResponse = siteService.createSite(siteCreateRequestDto);
+		return ResponseEntity.ok(siteResponse);
 	}
 }

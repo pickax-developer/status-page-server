@@ -1,6 +1,6 @@
 package com.pickax.status.page.server.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,18 +20,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "meta_tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MetaTag {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "meta_tag", nullable = false)
-	private String metaTag;
+	@Column(name = "content", nullable = false)
+	private String content;
 
 	@Column(name = "is_checked", nullable = false)
 	private Boolean isChecked;
 
 	@Column(name = "expired_date", nullable = false)
-	private ZonedDateTime expiredDate;
+	private LocalDateTime expiredDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "site_id")
@@ -41,13 +42,13 @@ public class MetaTag {
 		this.site = site;
 	}
 
-	private MetaTag(String metaTag) {
-		this.metaTag = metaTag;
+	private MetaTag(String content, LocalDateTime expiredDate) {
+		this.content = content;
+		this.expiredDate = expiredDate;
 		this.isChecked = false;
-		this.expiredDate = ZonedDateTime.now().plusDays(7);
 	}
 
-	public static MetaTag from(String metaTag) {
-		return new MetaTag(metaTag);
+	public static MetaTag of(String metaTag, LocalDateTime expiredDate) {
+		return new MetaTag(metaTag, expiredDate);
 	}
 }

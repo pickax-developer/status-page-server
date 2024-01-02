@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickax.status.page.server.dto.request.SiteRequestDto;
+import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -37,7 +37,7 @@ class SiteControllerTest {
 		// when
 		String url = "/sites";
 
-		SiteRequestDto siteRequestDto = SiteRequestDto.of(
+		SiteCreateRequestDto siteCreateRequestDto = SiteCreateRequestDto.of(
 			"name",
 			"description",
 			"url"
@@ -47,7 +47,7 @@ class SiteControllerTest {
 				MockMvcRequestBuilders
 					.post(url)
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(siteRequestDto))
+					.content(objectMapper.writeValueAsString(siteCreateRequestDto))
 					.accept(MediaType.APPLICATION_JSON)
 			)
 			.andDo(print())

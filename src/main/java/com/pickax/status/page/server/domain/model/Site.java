@@ -3,8 +3,8 @@ package com.pickax.status.page.server.domain.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pickax.status.page.server.domain.enumclass.RegistrationStatus;
-import com.pickax.status.page.server.dto.request.SiteRequestDto;
+import com.pickax.status.page.server.domain.enumclass.SiteRegistrationStatus;
+import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,11 +39,11 @@ public class Site {
 	@Column(name = "url", nullable = false)
 	private String url;
 
-	@Column(name = "registration_status", nullable = false)
+	@Column(name = "site_registration_status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private RegistrationStatus registrationStatus;
+	private SiteRegistrationStatus siteRegistrationStatus;
 
-	@OneToMany(mappedBy = "metaTag", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<MetaTag> mataTags = new ArrayList<>();
 
 	public void addMetaTag(MetaTag metaTag) {
@@ -51,14 +51,14 @@ public class Site {
 		metaTag.updateSite(this);
 	}
 
-	private Site(SiteRequestDto siteRequestDto) {
-		this.name = siteRequestDto.getName();
-		this.description = siteRequestDto.getDescription();
-		this.url = siteRequestDto.getUrl();
-		this.registrationStatus = RegistrationStatus.UNVERIFIED;
+	private Site(SiteCreateRequestDto siteCreateRequestDto) {
+		this.name = siteCreateRequestDto.getName();
+		this.description = siteCreateRequestDto.getDescription();
+		this.url = siteCreateRequestDto.getUrl();
+		this.siteRegistrationStatus = SiteRegistrationStatus.UNVERIFIED;
 	}
 
-	public static Site from(SiteRequestDto siteRequestDto) {
-		return new Site(siteRequestDto);
+	public static Site from(SiteCreateRequestDto siteCreateRequestDto) {
+		return new Site(siteCreateRequestDto);
 	}
 }
