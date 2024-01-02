@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pickax.status.page.server.dto.request.ServiceRequestDto;
-import com.pickax.status.page.server.dto.reseponse.ServiceResponseDto;
-import com.pickax.status.page.server.service.ServiceService;
+import com.pickax.status.page.server.dto.request.SiteRequestDto;
+import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
+import com.pickax.status.page.server.service.SiteService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +17,16 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/services")
-public class ServiceController {
+@RequestMapping("/sites")
+public class SiteController {
 
-	private final ServiceService serviceService;
+	private final SiteService siteService;
 
 	@PostMapping
-	public ResponseEntity<ServiceResponseDto> createService(
-		@RequestBody @Valid ServiceRequestDto serviceRequestDto
+	public ResponseEntity<SiteResponseDto> createSite(
+		@RequestBody @Valid SiteRequestDto siteRequestDto
 	) {
-		ServiceResponseDto serviceResponse = serviceService.createService(serviceRequestDto);
+		SiteResponseDto serviceResponse = siteService.createSite(siteRequestDto);
 		return ResponseEntity.ok(serviceResponse);
 	}
 }

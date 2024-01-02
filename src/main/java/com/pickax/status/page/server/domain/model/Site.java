@@ -1,10 +1,10 @@
-package com.pickax.status.page.server.domain;
+package com.pickax.status.page.server.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pickax.status.page.server.enumclass.RegistrationStatus;
-import com.pickax.status.page.server.dto.request.ServiceRequestDto;
+import com.pickax.status.page.server.domain.enumclass.RegistrationStatus;
+import com.pickax.status.page.server.dto.request.SiteRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "services")
+@Table(name = "sites")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Service {
+public class Site {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -48,17 +48,17 @@ public class Service {
 
 	public void addMetaTag(MetaTag metaTag) {
 		this.mataTags.add(metaTag);
-		metaTag.updateService(this);
+		metaTag.updateSite(this);
 	}
 
-	private Service(ServiceRequestDto serviceRequestDto) {
-		this.name = serviceRequestDto.getName();
-		this.description = serviceRequestDto.getDescription();
-		this.url = serviceRequestDto.getUrl();
+	private Site(SiteRequestDto siteRequestDto) {
+		this.name = siteRequestDto.getName();
+		this.description = siteRequestDto.getDescription();
+		this.url = siteRequestDto.getUrl();
 		this.registrationStatus = RegistrationStatus.UNVERIFIED;
 	}
 
-	public static Service from(ServiceRequestDto serviceRequestDto) {
-		return new Service(serviceRequestDto);
+	public static Site from(SiteRequestDto siteRequestDto) {
+		return new Site(siteRequestDto);
 	}
 }

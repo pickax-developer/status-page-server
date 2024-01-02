@@ -17,14 +17,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickax.status.page.server.dto.request.ServiceRequestDto;
+import com.pickax.status.page.server.dto.request.SiteRequestDto;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ServiceControllerTest {
+class SiteControllerTest {
 	@Autowired
 	public MockMvc mockMvc;
 
@@ -32,12 +32,12 @@ class ServiceControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	@DisplayName("POST service 등록 api - 200 OK")
-	void createService() throws Exception {
+	@DisplayName("POST site 등록 api - 200 OK")
+	void createSite() throws Exception {
 		// when
-		String url = "/services";
+		String url = "/sites";
 
-		ServiceRequestDto serviceRequestDto = ServiceRequestDto.of(
+		SiteRequestDto siteRequestDto = SiteRequestDto.of(
 			"name",
 			"description",
 			"url"
@@ -47,7 +47,7 @@ class ServiceControllerTest {
 				MockMvcRequestBuilders
 					.post(url)
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(serviceRequestDto))
+					.content(objectMapper.writeValueAsString(siteRequestDto))
 					.accept(MediaType.APPLICATION_JSON)
 			)
 			.andDo(print())

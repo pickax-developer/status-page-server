@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ServiceRequestDto {
+public class SiteRequestDto {
 
 	@NotBlank
 	private String name;
@@ -16,13 +16,13 @@ public class ServiceRequestDto {
 	@NotBlank
 	private String url;
 
-	private ServiceRequestDto(String name, String description, String url) {
+	private SiteRequestDto(String name, String description, String url) {
 		this.name = name;
 		this.description = description;
 		this.url = url;
 	}
 
-	public static ServiceRequestDto of(String name, String description, String url) {
-		return new ServiceRequestDto(name, description, url);
+	public static SiteRequestDto of(String name, String description, String url) {
+		return new SiteRequestDto(name, description, url);
 	}
 }

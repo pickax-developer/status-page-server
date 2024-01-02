@@ -1,4 +1,4 @@
-package com.pickax.status.page.server.domain;
+package com.pickax.status.page.server.domain.model;
 
 import java.time.ZonedDateTime;
 
@@ -34,11 +34,11 @@ public class MetaTag {
 	private ZonedDateTime expiredDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "service_id")
-	private Service service;
+	@JoinColumn(name = "site_id")
+	private Site site;
 
-	public void updateService(Service service) {
-		this.service = service;
+	public void updateSite(Site site) {
+		this.site = site;
 	}
 
 	private MetaTag(String metaTag) {
