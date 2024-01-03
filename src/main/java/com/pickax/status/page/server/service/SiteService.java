@@ -57,6 +57,7 @@ public class SiteService {
 		return metaTag;
 	}
 
+	@Transactional
 	public void verifySite(long siteId) throws IOException {
 		Site site = siteRepository.findById(siteId)
 				.orElseThrow(EntityNotFoundException::new);

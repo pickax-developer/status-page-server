@@ -37,7 +37,7 @@ public class SiteController {
 		return ResponseEntity.ok(siteResponse);
 	}
 
-	@GetMapping("{siteId}/verify")
+	@PostMapping("{siteId}/verify")
 	public void verifySite(@PathVariable long siteId) throws IOException {
 		siteService.verifySite(siteId);
 	}
@@ -54,5 +54,4 @@ public class SiteController {
 	public ResponseEntity<MetaTagValidation> validateByMetaTag(@PathVariable Long siteId) {
 		return ResponseEntity.ok(this.siteService.findValidMetaTag(siteId));
 	}
-
 }
