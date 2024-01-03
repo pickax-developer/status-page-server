@@ -4,5 +4,4 @@ public enum SiteRegistrationStatus {
 	COMPLETED,
 	UNVERIFIED,
 	CANCELED,
-
 }

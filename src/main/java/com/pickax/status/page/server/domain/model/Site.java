@@ -61,4 +61,12 @@ public class Site {
 	public static Site from(SiteCreateRequestDto siteCreateRequestDto) {
 		return new Site(siteCreateRequestDto);
 	}
+
+	public boolean isUnverified() {
+		return SiteRegistrationStatus.UNVERIFIED.equals(siteRegistrationStatus);
+	}
+
+	public void complete() {
+		this.siteRegistrationStatus = SiteRegistrationStatus.COMPLETED;
+	}
 }
