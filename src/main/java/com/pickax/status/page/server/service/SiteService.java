@@ -44,7 +44,7 @@ public class SiteService {
 
 		siteRepository.save(site);
 
-		return SiteResponseDto.from(metaTag.getContent());
+		return SiteResponseDto.from(metaTag.getId(), metaTag.getContent());
 	}
 
 	private MetaTag createMetaTag() {
