@@ -51,4 +51,20 @@ public class MetaTag {
 	public static MetaTag of(String metaTag, LocalDateTime expiredDate) {
 		return new MetaTag(metaTag, expiredDate);
 	}
+
+	public boolean isChecked() {
+		return isChecked;
+	}
+
+	public boolean isExpired() {
+		return expiredDate.isBefore(LocalDateTime.now());
+	}
+
+	public boolean isSameAs(String content) {
+		return this.content.equals(content);
+	}
+
+	public void check() {
+		isChecked = true;
+	}
 }

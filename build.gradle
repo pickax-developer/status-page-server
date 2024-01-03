@@ -33,6 +33,9 @@ dependencies {
 
     // MySQL
     implementation 'com.mysql:mysql-connector-j:8.2.0'
+
+    // parser
+    implementation 'org.jsoup:jsoup:1.17.2'
 }
 
 tasks.named('test') {
