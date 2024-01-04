@@ -51,6 +51,9 @@ public class Site {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<Component> components = new ArrayList<>();
+
 	public void addMetaTag(MetaTag metaTag) {
 		this.mataTags.add(metaTag);
 		metaTag.updateSite(this);
