@@ -81,4 +81,8 @@ public class Site {
 	public boolean hasValidatedOwnerByMetaTag() {
 		return SiteRegistrationStatus.COMPLETED.equals(this.siteRegistrationStatus);
 	}
+
+	public boolean ownerEqualsBy(Long requestId) {
+		return this.getUser().getId().equals(requestId);
+	}
 }
