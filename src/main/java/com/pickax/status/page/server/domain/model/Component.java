@@ -45,4 +45,18 @@ public class Component {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "site_id")
 	private Site site;
+
+	private Component(String name, String description, ComponentStatus status, Long frequency, boolean isActive, Site site) {
+		this.name = name;
+		this.description = description;
+		this.componentStatus = status;
+		this.frequency = frequency;
+		this.isActive = isActive;
+		this.site = site;
+	}
+
+	public static Component create(String name, String description, ComponentStatus status, Long frequency, boolean isActive, Site site) {
+		return new Component(name, description, status, frequency, isActive, site);
+	}
+
 }
