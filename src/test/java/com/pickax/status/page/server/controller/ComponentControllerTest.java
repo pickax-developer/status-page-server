@@ -35,7 +35,7 @@ class ComponentControllerTest {
 	void getComponents() throws Exception {
 		// when
 		Long siteId = 1L;
-		String url = String.format("/sites/%s/components", siteId);
+		String url = String.format("/sites/%s/components/active", siteId);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders
@@ -46,6 +46,6 @@ class ComponentControllerTest {
 
 			// then
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.size()").value("2"));
+			.andExpect(jsonPath("$.componentResponseDtoList.size()").value("2"));
 	}
 }

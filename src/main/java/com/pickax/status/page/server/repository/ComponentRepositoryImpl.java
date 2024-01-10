@@ -18,7 +18,7 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<ComponentResponseDto> getComponents(Long siteId) {
+	public List<ComponentResponseDto> getComponents(Long siteId, boolean isActive) {
 		return queryFactory
 			.select(new QComponentResponseDto(
 				component.id,
@@ -30,7 +30,7 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 			.from(component)
 			.where(
 				component.site.id.eq(siteId),
-				component.isActive.eq(true)
+				component.isActive.eq(isActive)
 			)
 			.fetch();
 	}
