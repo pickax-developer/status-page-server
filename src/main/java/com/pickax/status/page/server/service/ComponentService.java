@@ -8,8 +8,11 @@ import com.pickax.status.page.server.repository.ComponentRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.pickax.status.page.server.dto.reseponse.ComponentResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,4 +40,8 @@ public class ComponentService {
         this.componentRepository.save(component);
     }
 
+	public List<ComponentResponseDto> getActiveComponents(Long siteId) {
+		siteRepository.findById(siteId).orElseThrow(EntityNotFoundException::new);
+		return componentRepository.getComponents(siteId, true);
+	}
 }
