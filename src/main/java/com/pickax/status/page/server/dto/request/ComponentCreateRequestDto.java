@@ -1,24 +1,23 @@
 package com.pickax.status.page.server.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @ToString
-public class CreateComponentRequest {
+public class ComponentCreateRequestDto {
 
+    @NotBlank
     private String name;
 
     private String description;
 
+    @NotNull
     private Long frequency;
 
+    @NotNull
     private boolean isActive;
-
-    @Setter
-    @JsonIgnore
-    private Long requesterId;
 
 }

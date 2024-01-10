@@ -82,7 +82,7 @@ public class Site {
 		return SiteRegistrationStatus.COMPLETED.equals(this.siteRegistrationStatus);
 	}
 
-	public boolean ownerEqualsBy(Long requestId) {
-		return this.getUser().getId().equals(requestId);
+	public boolean ownerEqualsBy(Long requesterId) {
+		return this.getUser().getId().equals(requesterId);
 	}
 }
