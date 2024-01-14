@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.pickax.status.page.server.common.exception.CustomException;
+import com.pickax.status.page.server.common.exception.ErrorCode;
 import com.pickax.status.page.server.dto.reseponse.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
 import jakarta.persistence.EntityNotFoundException;
@@ -58,19 +60,32 @@ public class SiteService {
 	}
 
 	@Transactional
-	public void verifySite(long siteId) throws IOException {
+	public void verifySite(long siteId) {
 		Site site = siteRepository.findById(siteId)
-				.orElseThrow(EntityNotFoundException::new);
-
-		MetaTag metaTag = metaTagRepository.findFirstBySite_Id(siteId)
-				.orElseThrow(EntityNotFoundException::new);
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
 
 		if (!site.isUnverified()) {
-			throw new BadRequestException();
+			throw new CustomException(ErrorCode.INVALID_UNVERIFIED_SITE);
 		}
 
-		if (metaTag.isChecked() || metaTag.isExpired()) {
-			throw new BadRequestException();
+		MetaTag metaTag = metaTagRepository.findFirstBySite_Id(siteId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
+
+		try {
+			checkMetaTag(site, metaTag);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	private void checkMetaTag(Site site, MetaTag metaTag) throws IOException {
+		if (metaTag.isChecked()) {
+			throw new CustomException(ErrorCode.INVALID_CHECKED_META_TAG);
+		}
+
+		if (metaTag.isExpired()) {
+			throw new CustomException(ErrorCode.INVALID_EXPIRED_META_TAG);
 		}
 
 		Document doc = Jsoup.connect(site.getUrl()).get();
@@ -86,7 +101,7 @@ public class SiteService {
 			}
 		}
 
-		throw new BadRequestException();
+		throw new CustomException(ErrorCode.INVALID_META_TAG);
 	}
 
 	/**
@@ -114,15 +129,17 @@ public class SiteService {
 	}
 
 	public MetaTagValidation findValidMetaTag(Long siteId) {
-		Site site = this.siteRepository.findById(siteId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사이트 입니다."));
+		Site site = this.siteRepository.findById(siteId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+
 		if (site.hasValidatedOwnerByMetaTag()) {
-			throw new IllegalArgumentException("이미 소유권이 증명된 사이트 입니다.");
+			throw new CustomException(ErrorCode.INVALID_COMPLETED_SITE);
 		}
 
 		MetaTag metaTagNotYetChecked = this.metaTagRepository.findMetaTagNotYetCheckedBySiteId(siteId, false)
 				.stream()
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("메타태그가 존재하지 않습니다."));
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
 
 		return new MetaTagValidation(metaTagNotYetChecked.getId(), metaTagNotYetChecked.getContent());
 	}
