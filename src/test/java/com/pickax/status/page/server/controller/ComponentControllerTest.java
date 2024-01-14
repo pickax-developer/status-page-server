@@ -1,5 +1,6 @@
 package com.pickax.status.page.server.controller;
 
+import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,8 +32,8 @@ class ComponentControllerTest {
 	public MockMvc mockMvc;
 
 	@Test
-	@DisplayName("GET Component 리스트 조회 api - 200 OK")
-	void getComponents() throws Exception {
+	@DisplayName("GET active component 리스트 조회 api - 200 OK")
+	void getActiveComponents() throws Exception {
 		// when
 		Long siteId = 1L;
 		String url = String.format("/sites/%s/components/active", siteId);
@@ -46,6 +47,63 @@ class ComponentControllerTest {
 
 			// then
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.componentActiveResponseDtoList.size()").value("1"));
+	}
+
+	@Test
+	@DisplayName("GET active component 리스트 조회 api - 404 NOT FOUND")
+	void getActiveComponentsByNonExistentSiteId() throws Exception {
+		// when
+		Long siteId = 99L;
+		String url = String.format("/sites/%s/components/active", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andDo(print())
+
+			// then
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
+	}
+
+	@Test
+	@DisplayName("GET component 리스트 조회 api - 200 OK")
+	void getComponents() throws Exception {
+		// when
+		Long siteId = 1L;
+		String url = String.format("/sites/%s/components", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andDo(print())
+
+			// then
+			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.componentResponseDtoList.size()").value("2"));
+	}
+
+	@Test
+	@DisplayName("GET component 리스트 조회 api - 404 NOT FOUND")
+	void getComponentsByNonExistentSiteId() throws Exception {
+		// when
+		Long siteId = 99L;
+		String url = String.format("/sites/%s/components", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andDo(print())
+
+			// then
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
 	}
 }

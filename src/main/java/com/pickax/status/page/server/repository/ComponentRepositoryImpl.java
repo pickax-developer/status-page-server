@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.pickax.status.page.server.dto.reseponse.ComponentResponseDto;
-import com.pickax.status.page.server.dto.reseponse.QComponentResponseDto;
+import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
+import com.pickax.status.page.server.dto.reseponse.component.ComponentResponseDto;
+import com.pickax.status.page.server.dto.reseponse.component.QComponentActiveResponseDto;
+import com.pickax.status.page.server.dto.reseponse.component.QComponentResponseDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -18,9 +20,9 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<ComponentResponseDto> getComponents(Long siteId, boolean isActive) {
+	public List<ComponentActiveResponseDto> getActiveComponents(Long siteId, boolean isActive) {
 		return queryFactory
-			.select(new QComponentResponseDto(
+			.select(new QComponentActiveResponseDto(
 				component.id,
 				component.name,
 				component.description,
@@ -31,6 +33,23 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 			.where(
 				component.site.id.eq(siteId),
 				component.isActive.eq(isActive)
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<ComponentResponseDto> getComponents(Long siteId) {
+		return queryFactory
+			.select(new QComponentResponseDto(
+				component.id,
+				component.name,
+				component.description,
+				component.componentStatus,
+				component.frequency,
+				component.isActive
+			)).from(component)
+			.where(
+				component.site.id.eq(siteId)
 			)
 			.fetch();
 	}
