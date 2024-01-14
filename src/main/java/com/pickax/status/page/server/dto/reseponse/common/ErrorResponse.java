@@ -6,43 +6,66 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class ErrorResponse {
-	private int status;
-	private String error;
-	private String customError;
-	private String message;
-	private String path;
-	private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private int status;
+    private String error;
+    private String customError;
+    private String message;
+    private String path;
+    private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private List<FieldError> errors;
 
-	@Builder
-	private ErrorResponse(
-		int status, String error, String customError, String message, String path
-	) {
-		this.status = status;
-		this.error = error;
-		this.customError = customError;
-		this.message = message;
-		this.path = path;
-	}
+    @Builder
+    private ErrorResponse(
+            int status, String error, String customError, String message, String path, List<FieldError> errors
+    ) {
+        this.status = status;
+        this.error = error;
+        this.customError = customError;
+        this.message = message;
+        this.path = path;
+        this.error = error;
+    }
 
-	public static ResponseEntity<ErrorResponse> toResponseEntity(
-			ErrorCode errorCode, String message, HttpServletRequest request
-	) {
-		return ResponseEntity
-			.status(errorCode.getHttpStatus())
-			.body(ErrorResponse.builder()
-				.status(errorCode.getHttpStatus().value())
-				.error(errorCode.getHttpStatus().name())
-				.customError(errorCode.name())
-				.message(message)
-				.path(request.getRequestURI())
-				.build()
-			);
-	}
+    public static ResponseEntity<ErrorResponse> toResponseEntity(
+            ErrorCode errorCode, String message, HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .status(errorCode.getHttpStatus().value())
+                        .error(errorCode.getHttpStatus().name())
+                        .customError(errorCode.name())
+                        .message(message)
+                        .path(request.getRequestURI())
+                        .build()
+                );
+    }
+
+    public static ResponseEntity<ErrorResponse> toResponseEntity(
+            ErrorCode errorCode, final BindingResult bindingResult, HttpServletRequest request
+    ) {
+        final List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        String message = fieldErrors.get(0) == null ? "" : fieldErrors.get(0).getDefaultMessage();
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .status(errorCode.getHttpStatus().value())
+                        .error(errorCode.getHttpStatus().name())
+                        .customError(errorCode.name())
+                        .message(message)
+                        .errors(fieldErrors)
+                        .path(request.getRequestURI())
+                        .build()
+                );
+    }
 }
