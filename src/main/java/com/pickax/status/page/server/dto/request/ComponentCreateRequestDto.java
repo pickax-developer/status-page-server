@@ -18,6 +18,6 @@ public class ComponentCreateRequestDto {
     private Long frequency;
 
     @NotNull
-    private boolean isActive;
+    private Boolean isActive;
 
 }
