@@ -47,12 +47,12 @@ public class ComponentService {
 	@Transactional(readOnly = true)
 	public List<ComponentActiveResponseDto> getActiveComponents(Long siteId) {
 		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
-		return componentRepository.getActiveComponents(siteId, true);
+		return componentRepository.getComponentActiveResponses(siteId);
 	}
 
 	@Transactional(readOnly = true)
 	public List<ComponentResponseDto> getComponents(Long siteId) {
 		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
-		return componentRepository.getComponents(siteId);
+		return componentRepository.getComponentResponses(siteId);
 	}
 }

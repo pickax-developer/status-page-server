@@ -19,8 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
-	@Override
-	public List<ComponentActiveResponseDto> getActiveComponents(Long siteId, boolean isActive) {
+	public List<ComponentActiveResponseDto> getComponentActiveResponses(Long siteId) {
 		return queryFactory
 			.select(new QComponentActiveResponseDto(
 				component.id,
@@ -32,13 +31,13 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 			.from(component)
 			.where(
 				component.site.id.eq(siteId),
-				component.isActive.eq(isActive)
+				component.isActive.eq(true)
 			)
 			.fetch();
 	}
 
 	@Override
-	public List<ComponentResponseDto> getComponents(Long siteId) {
+	public List<ComponentResponseDto> getComponentResponses(Long siteId) {
 		return queryFactory
 			.select(new QComponentResponseDto(
 				component.id,

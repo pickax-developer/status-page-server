@@ -6,7 +6,7 @@ import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResp
 import com.pickax.status.page.server.dto.reseponse.component.ComponentResponseDto;
 
 public interface ComponentRepositoryCustom {
-	List<ComponentActiveResponseDto> getActiveComponents(Long siteId, boolean isActive);
+	List<ComponentActiveResponseDto> getComponentActiveResponses(Long siteId);
 
-	List<ComponentResponseDto> getComponents(Long siteId);
+	List<ComponentResponseDto> getComponentResponses(Long siteId);
 }
