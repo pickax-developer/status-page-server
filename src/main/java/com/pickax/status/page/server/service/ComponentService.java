@@ -37,7 +37,7 @@ public class ComponentService {
                 request.getDescription(),
                 ComponentStatus.NONE,
                 request.getFrequency(),
-                request.isActive(),
+                request.getIsActive(),
                 site
         );
 
