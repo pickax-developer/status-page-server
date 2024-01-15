@@ -44,6 +44,9 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private SiteRegistrationStatus siteRegistrationStatus;
 
+	@Column(name = "secret_key", nullable = false)
+	private String secretKey;
+
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<MetaTag> mataTags = new ArrayList<>();
 
@@ -59,15 +62,16 @@ public class Site {
 		metaTag.updateSite(this);
 	}
 
-	private Site(SiteCreateRequestDto siteCreateRequestDto) {
+	private Site(SiteCreateRequestDto siteCreateRequestDto, String secretKey) {
 		this.name = siteCreateRequestDto.getName();
 		this.description = siteCreateRequestDto.getDescription();
 		this.url = siteCreateRequestDto.getUrl();
 		this.siteRegistrationStatus = SiteRegistrationStatus.UNVERIFIED;
+		this.secretKey = secretKey;
 	}
 
-	public static Site from(SiteCreateRequestDto siteCreateRequestDto) {
-		return new Site(siteCreateRequestDto);
+	public static Site of(SiteCreateRequestDto siteCreateRequestDto, String secretKey) {
+		return new Site(siteCreateRequestDto, secretKey);
 	}
 
 	public boolean isUnverified() {
