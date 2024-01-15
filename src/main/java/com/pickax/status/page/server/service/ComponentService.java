@@ -6,6 +6,7 @@ import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import com.pickax.status.page.server.domain.model.Component;
 import com.pickax.status.page.server.domain.model.Site;
 import com.pickax.status.page.server.dto.request.ComponentCreateRequestDto;
+import com.pickax.status.page.server.dto.reseponse.component.ComponentResponseDto;
 import com.pickax.status.page.server.repository.ComponentRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.pickax.status.page.server.dto.reseponse.ComponentResponseDto;
+import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +44,15 @@ public class ComponentService {
         this.componentRepository.save(component);
     }
 
-    @Transactional(readOnly = true)
-	public List<ComponentResponseDto> getActiveComponents(Long siteId) {
-        siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
-		return componentRepository.getComponents(siteId, true);
+	@Transactional(readOnly = true)
+	public List<ComponentActiveResponseDto> getActiveComponents(Long siteId) {
+		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+		return componentRepository.getComponentActiveResponses(siteId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ComponentResponseDto> getComponents(Long siteId) {
+		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+		return componentRepository.getComponentResponses(siteId);
 	}
 }
