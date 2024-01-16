@@ -31,12 +31,6 @@ public class GlobalExceptionHandler {
 		return ErrorResponse.toResponseEntity(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult(), request);
 	}
 
-	@ExceptionHandler(UnknownHostException.class)
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
-		return ErrorResponse.toResponseEntity(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult(), request);
-	}UnknownHostException
-
-
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
 		return ErrorResponse.toResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage(), request);
