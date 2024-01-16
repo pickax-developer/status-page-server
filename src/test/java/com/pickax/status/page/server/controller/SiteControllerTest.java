@@ -1,5 +1,6 @@
 package com.pickax.status.page.server.controller;
 
+import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,6 +25,10 @@ import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
+@Sql(scripts = {
+	"classpath:data/users.sql",
+	"classpath:data/sites.sql",
+})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SiteControllerTest {
 	@Autowired
@@ -54,5 +60,42 @@ class SiteControllerTest {
 
 			// then
 			.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("GET site secretKey 조회 api - 200 OK")
+	void getSecretKey() throws Exception {
+		// when
+		Long siteId = 1L;
+		String url = String.format("/sites/%s/secret-key", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andDo(print())
+
+			// then
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("GET site secretKey 조회 api - 404 NOT FOUND")
+	void getSecretKeyByNonExistentSiteId() throws Exception {
+		// when
+		Long siteId = 99L;
+		String url = String.format("/sites/%s/secret-key", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+			)
+			.andDo(print())
+
+			// then
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
 	}
 }

@@ -20,12 +20,13 @@ import org.springframework.stereotype.Service;
 
 import com.pickax.status.page.server.domain.model.MetaTag;
 import com.pickax.status.page.server.domain.model.Site;
+import com.pickax.status.page.server.dto.reseponse.SiteSecretKeyResponseDto;
 import com.pickax.status.page.server.repository.MetaTagRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -147,5 +148,13 @@ public class SiteService {
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
 
 		return new MetaTagValidation(metaTagNotYetChecked.getId(), metaTagNotYetChecked.getContent());
+	}
+
+	@Transactional(readOnly = true)
+	public SiteSecretKeyResponseDto getSecretKey(Long siteId) {
+		Site site = this.siteRepository.findById(siteId)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+
+		return SiteSecretKeyResponseDto.from(site.getSecretKey());
 	}
 }
