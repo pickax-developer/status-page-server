@@ -39,7 +39,8 @@ public class SiteService {
 
 	@Transactional
 	public SiteResponseDto createSite(SiteCreateRequestDto siteCreateRequestDto) {
-		Site site = Site.from(siteCreateRequestDto);
+		String secretKey = createSecretKey();
+		Site site = Site.of(siteCreateRequestDto, secretKey);
 
 		MetaTag metaTag = createMetaTag();
 		site.addMetaTag(metaTag);
@@ -57,6 +58,10 @@ public class SiteService {
 		metaTagRepository.save(metaTag);
 
 		return metaTag;
+	}
+
+	private String createSecretKey() {
+		return UUID.randomUUID().toString();
 	}
 
 	@Transactional
