@@ -44,7 +44,7 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private SiteRegistrationStatus siteRegistrationStatus;
 
-	@Column(name = "secret_key", nullable = false)
+	@Column(name = "secret_key", length = 50, nullable = false)
 	private String secretKey;
 
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
