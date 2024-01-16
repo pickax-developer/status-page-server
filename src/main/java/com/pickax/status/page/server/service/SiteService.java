@@ -1,6 +1,8 @@
 package com.pickax.status.page.server.service;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +12,6 @@ import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
 import com.pickax.status.page.server.dto.reseponse.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
-import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.BadRequestException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -76,15 +76,10 @@ public class SiteService {
 		MetaTag metaTag = metaTagRepository.findFirstBySite_Id(siteId)
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
 
-		try {
-			checkMetaTag(site, metaTag);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-		}
+		checkMetaTag(site, metaTag);
 	}
 
-	private void checkMetaTag(Site site, MetaTag metaTag) throws IOException {
+	private void checkMetaTag(Site site, MetaTag metaTag) {
 		if (metaTag.isChecked()) {
 			throw new CustomException(ErrorCode.INVALID_CHECKED_META_TAG);
 		}
@@ -93,7 +88,18 @@ public class SiteService {
 			throw new CustomException(ErrorCode.INVALID_EXPIRED_META_TAG);
 		}
 
-		Document doc = Jsoup.connect(site.getUrl()).get();
+		Document doc;
+
+		try {
+			doc = Jsoup.connect(site.getUrl()).get();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INVALID_SITE_URL);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+
 		Elements metaTags = doc.head().getElementsByTag("meta");
 
 		for(Element meta: metaTags) {
