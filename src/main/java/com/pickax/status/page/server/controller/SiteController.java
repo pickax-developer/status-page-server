@@ -38,7 +38,7 @@ public class SiteController {
 	}
 
 	@PostMapping("{siteId}/verify")
-	public void verifySite(@PathVariable long siteId) throws IOException {
+	public void verifySite(@PathVariable long siteId) {
 		siteService.verifySite(siteId);
 	}
 
