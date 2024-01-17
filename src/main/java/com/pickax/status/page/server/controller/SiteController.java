@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
+import com.pickax.status.page.server.dto.reseponse.SiteSecretKeyResponseDto;
 import com.pickax.status.page.server.service.SiteService;
 
 import jakarta.validation.Valid;
@@ -53,5 +54,10 @@ public class SiteController {
 	@GetMapping("/{siteId}/meta-tags")
 	public ResponseEntity<MetaTagValidation> validateByMetaTag(@PathVariable Long siteId) {
 		return ResponseEntity.ok(this.siteService.findValidMetaTag(siteId));
+	}
+
+	@GetMapping("/{siteId}/secret-key")
+	public ResponseEntity<SiteSecretKeyResponseDto> getSecretKey(@PathVariable Long siteId) {
+		return ResponseEntity.ok(this.siteService.getSecretKey(siteId));
 	}
 }
