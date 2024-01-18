@@ -4,6 +4,7 @@ import static com.pickax.status.page.server.domain.model.QComponent.*;
 
 import java.util.List;
 
+import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import org.springframework.stereotype.Repository;
 
 import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
@@ -51,5 +52,14 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 				component.site.id.eq(siteId)
 			)
 			.fetch();
+	}
+
+	@Override
+	public void updateComponentStatus(Long componentId, ComponentStatus componentStatus) {
+		queryFactory
+				.update(component)
+				.set(component.componentStatus, componentStatus)
+				.where(component.id.eq(componentId))
+				.execute();
 	}
 }

@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: ${DB_HOST}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: ${DB_HOST}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+  quartz:
+    job-store-type: jdbc
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
