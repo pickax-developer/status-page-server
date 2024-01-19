@@ -1,10 +1,14 @@
 package com.pickax.status.page.server.repository;
 
 import static com.pickax.status.page.server.domain.model.QComponent.*;
+import static com.pickax.status.page.server.domain.model.QSite.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
+import com.pickax.status.page.server.domain.model.Component;
+import com.pickax.status.page.server.domain.model.QSite;
 import org.springframework.stereotype.Repository;
 
 import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
@@ -53,6 +57,18 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 			)
 			.fetch();
 	}
+
+    @Override
+    public Optional<Component> getComponent(Long id) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(component)
+                        .join(component.site, site).fetchJoin()
+                        .where(
+                                component.id.eq(id)
+                        )
+                        .fetchOne());
+    }
 
 	@Override
 	public void updateComponentStatus(Long componentId, ComponentStatus componentStatus) {

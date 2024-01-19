@@ -2,10 +2,8 @@ package com.pickax.status.page.server.service;
 
 import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import com.pickax.status.page.server.domain.model.StatusLog;
-import com.pickax.status.page.server.dto.reseponse.LatestHealthCheckRequestLogDto;
-import com.pickax.status.page.server.repository.ComponentRepository;
-import com.pickax.status.page.server.repository.HealthCheckRepository;
-import com.pickax.status.page.server.repository.StatusLogRepository;
+import com.pickax.status.page.server.dto.reseponse.LatestHealthCheckCallLogDto;
+import com.pickax.status.page.server.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,15 +18,15 @@ import java.util.List;
 public class StatusLogService {
 
     private final ComponentRepository componentRepository;
-    private final HealthCheckRepository healthCheckRepository;
     private final StatusLogRepository statusLogRepository;
+    private final HealthCheckCallLogRepositoryQuery healthCheckCallLogRepositoryQuery;
 
     @Transactional
     public void inspectHealthCheckRequest() {
-        List<LatestHealthCheckRequestLogDto> latestHealthCheckRequestLogs = healthCheckRepository.findLatestLogsByComponentId();
+        List<LatestHealthCheckCallLogDto> latestHealthCheckRequestLogs = healthCheckCallLogRepositoryQuery.findLatestLogsByComponentId();
         ComponentStatus componentStatus = ComponentStatus.NONE;
 
-        for (LatestHealthCheckRequestLogDto latestHealthCheckLog : latestHealthCheckRequestLogs) {
+        for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckRequestLogs) {
             LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDate().toLocalDateTime();
             LocalDateTime timeLimit = lastRequestDateTime.plusSeconds(latestHealthCheckLog.getFrequency());
             LocalDateTime now = LocalDateTime.now();
@@ -63,7 +61,7 @@ public class StatusLogService {
         return ComponentStatus.NONE;
     }
 
-    private void saveStatusLog(LatestHealthCheckRequestLogDto latestHealthCheckLog, LocalDateTime lastRequestDateTime, Long riskLevel, LocalDateTime now, ComponentStatus componentStatus) {
+    private void saveStatusLog(LatestHealthCheckCallLogDto latestHealthCheckLog, LocalDateTime lastRequestDateTime, Long riskLevel, LocalDateTime now, ComponentStatus componentStatus) {
         this.statusLogRepository.save(StatusLog.create(
                 latestHealthCheckLog.getComponentId(),
                 lastRequestDateTime,

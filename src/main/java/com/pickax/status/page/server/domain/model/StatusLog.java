@@ -31,7 +31,7 @@ public class StatusLog {
     @Column(name = "component_status", nullable = false)
     private ComponentStatus componentStatus;
 
-    @Column(name = "riskLevel", nullable = false)
+    @Column(name = "risk_level", nullable = false)
     private Long riskLevel;
 
     @Column(name = "scheduler_run_at", nullable = false)
