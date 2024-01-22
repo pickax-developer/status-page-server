@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class LatestHealthCheckCallLogDto {
 
-    private Long healthCheckRequestLogId;
+    private Long healthCheckCallLogId;
 
     private Long componentId;
 
@@ -20,8 +20,8 @@ public class LatestHealthCheckCallLogDto {
     private Long frequency;
 
 
-    public LatestHealthCheckCallLogDto(Long healthCheckRequestLogId, Long componentId, Timestamp latestRequestDate, Long frequency) {
-        this.healthCheckRequestLogId = healthCheckRequestLogId;
+    public LatestHealthCheckCallLogDto(Long healthCheckCallLogId, Long componentId, Timestamp latestRequestDate, Long frequency) {
+        this.healthCheckCallLogId = healthCheckCallLogId;
         this.componentId = componentId;
         this.latestRequestDate = latestRequestDate;
         this.frequency = frequency;

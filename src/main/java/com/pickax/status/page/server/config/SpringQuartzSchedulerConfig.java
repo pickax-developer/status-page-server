@@ -54,7 +54,7 @@ public class SpringQuartzSchedulerConfig {
     @Bean
     public JobDetailFactoryBean jobDetail() {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-        final String JOB_NAME = "QUARTZ_JOB_DETAIL";
+        final String JOB_NAME = "COMPONENT_STATUS_INSPECTION";
 
         jobDetailFactory.setJobClass(StatusLogJob.class);
         jobDetailFactory.setName(JOB_NAME);
@@ -66,13 +66,14 @@ public class SpringQuartzSchedulerConfig {
     @Bean
     public SimpleTriggerFactoryBean trigger(JobDetail job) {
         SimpleTriggerFactoryBean trigger = new SimpleTriggerFactoryBean();
-        final String TRIGGER_NAME = "QUARTZ_TRIGGER";
+        final String TRIGGER_NAME = "COMPONENT_STATUS_INSPECTION_TRIGGER";
 
         trigger.setJobDetail(job);
 
-        int frequencyInSec = 60;
-        log.info("Configuring trigger to fire every {} seconds", frequencyInSec);
-        trigger.setRepeatInterval(frequencyInSec * 1000);
+        int frequencyInSeconds = 60;
+        final long SCHEDULER_FREQUENCY = frequencyInSeconds * 1000;
+        log.info("Configuring trigger to fire every {} seconds", frequencyInSeconds);
+        trigger.setRepeatInterval(SCHEDULER_FREQUENCY);
         trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
 
         trigger.setName(TRIGGER_NAME);
@@ -82,7 +83,7 @@ public class SpringQuartzSchedulerConfig {
     @Bean
     public SchedulerFactoryBean scheduler(Trigger trigger, JobDetail job, DataSource quartzDataSource) {
         SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
-        final String QUARTZ_CONFIG_PATH = "quartz.properties";
+        final String QUARTZ_CONFIG_PATH = "application.yml";
 
         schedulerFactory.setConfigLocation(new ClassPathResource(QUARTZ_CONFIG_PATH));
 

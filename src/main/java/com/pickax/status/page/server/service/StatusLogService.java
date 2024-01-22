@@ -1,7 +1,7 @@
 package com.pickax.status.page.server.service;
 
 import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
-import com.pickax.status.page.server.domain.model.StatusLog;
+import com.pickax.status.page.server.domain.model.ComponentStatusLog;
 import com.pickax.status.page.server.dto.reseponse.LatestHealthCheckCallLogDto;
 import com.pickax.status.page.server.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -22,22 +22,22 @@ public class StatusLogService {
     private final HealthCheckCallLogRepositoryQuery healthCheckCallLogRepositoryQuery;
 
     @Transactional
-    public void inspectHealthCheckRequest() {
-        List<LatestHealthCheckCallLogDto> latestHealthCheckRequestLogs = healthCheckCallLogRepositoryQuery.findLatestLogsByComponentId();
+    public void inspectHealthCheckCall() {
+        List<LatestHealthCheckCallLogDto> latestHealthCheckCallLogs = healthCheckCallLogRepositoryQuery.findLatestLogsByComponentId();
         ComponentStatus componentStatus = ComponentStatus.NONE;
 
-        for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckRequestLogs) {
+        for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckCallLogs) {
             LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDate().toLocalDateTime();
             LocalDateTime timeLimit = lastRequestDateTime.plusSeconds(latestHealthCheckLog.getFrequency());
             LocalDateTime now = LocalDateTime.now();
 
-            if (now.isBefore(timeLimit)) {
+            if (now.isBefore(timeLimit) || now.isEqual(timeLimit)) {
                 componentStatus = ComponentStatus.NO_ISSUES;
                 saveStatusLog(latestHealthCheckLog, lastRequestDateTime, 0L, now, componentStatus);
             } else {
                 Long riskLevel = this.statusLogRepository.findLatestComponentRiskLevel(latestHealthCheckLog.getComponentId());
-                componentStatus = makeComponentStatusByRiskLevel(riskLevel);
-                log.debug("risk level is {}, component status is {}", riskLevel, componentStatus);
+                componentStatus = makeComponentStatusByRiskLevel(riskLevel + 1);
+                log.debug("risk level is {}, component status is {}", riskLevel + 1, componentStatus);
 
                 saveStatusLog(latestHealthCheckLog, lastRequestDateTime, riskLevel + 1, now, componentStatus);
             }
@@ -54,15 +54,12 @@ public class StatusLogService {
         if (5 <= riskLevel && riskLevel < 10) {
             return ComponentStatus.WARN;
         }
-        if (riskLevel >= 10) {
-            return ComponentStatus.OUTAGE;
-        }
 
-        return ComponentStatus.NONE;
+        return ComponentStatus.OUTAGE;
     }
 
     private void saveStatusLog(LatestHealthCheckCallLogDto latestHealthCheckLog, LocalDateTime lastRequestDateTime, Long riskLevel, LocalDateTime now, ComponentStatus componentStatus) {
-        this.statusLogRepository.save(StatusLog.create(
+        this.statusLogRepository.save(ComponentStatusLog.create(
                 latestHealthCheckLog.getComponentId(),
                 lastRequestDateTime,
                 latestHealthCheckLog.getFrequency(),

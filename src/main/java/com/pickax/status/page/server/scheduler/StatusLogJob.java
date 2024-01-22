@@ -15,10 +15,9 @@ public class StatusLogJob implements Job {
     @Autowired
     private StatusLogService statusLogService;
 
-
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.debug("status log job execute");
-        this.statusLogService.inspectHealthCheckRequest();
+        this.statusLogService.inspectHealthCheckCall();
     }
 }

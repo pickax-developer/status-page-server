@@ -7,6 +7,19 @@ spring:
 
   quartz:
     job-store-type: jdbc
+    scheduler-name: QuackScheduler
+    jdbc:
+      initialize-schema: never
+    properties:
+      org:
+        quartz:
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadsInheritContextClassLoaderOfInitializingThread: true
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect

@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 
 @ToString
 @Entity
-@Table(name = "status_logs")
+@Table(name = "component_status_logs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StatusLog {
+public class ComponentStatusLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class StatusLog {
     private LocalDateTime schedulerRunDateTime;
 
 
-    public StatusLog(Long componentId, LocalDateTime requestDateTime, Long frequency, ComponentStatus componentStatus, Long riskLevel, LocalDateTime schedulerRunDateTime) {
+    public ComponentStatusLog(Long componentId, LocalDateTime requestDateTime, Long frequency, ComponentStatus componentStatus, Long riskLevel, LocalDateTime schedulerRunDateTime) {
         this.componentId = componentId;
         this.requestDateTime = requestDateTime;
         this.frequency = frequency;
@@ -47,8 +47,8 @@ public class StatusLog {
         this.schedulerRunDateTime = schedulerRunDateTime;
     }
 
-    public static StatusLog create(Long componentId, LocalDateTime lastRequestDateTime, Long frequency, ComponentStatus componentStatus, Long riskLevel, LocalDateTime schedulerRunDateTime) {
-        return new StatusLog(componentId, lastRequestDateTime, frequency, componentStatus, riskLevel, schedulerRunDateTime);
+    public static ComponentStatusLog create(Long componentId, LocalDateTime lastRequestDateTime, Long frequency, ComponentStatus componentStatus, Long riskLevel, LocalDateTime schedulerRunDateTime) {
+        return new ComponentStatusLog(componentId, lastRequestDateTime, frequency, componentStatus, riskLevel, schedulerRunDateTime);
     }
 
 }
