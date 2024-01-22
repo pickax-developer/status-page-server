@@ -1,4 +1,4 @@
-package com.pickax.status.page.server.dto.reseponse;
+package com.pickax.status.page.server.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,15 +15,15 @@ public class LatestHealthCheckCallLogDto {
 
     private Long componentId;
 
-    private Timestamp latestRequestDate;
+    private Timestamp latestRequestDateTime;
 
     private Long frequency;
 
 
-    public LatestHealthCheckCallLogDto(Long healthCheckCallLogId, Long componentId, Timestamp latestRequestDate, Long frequency) {
+    public LatestHealthCheckCallLogDto(Long healthCheckCallLogId, Long componentId, Timestamp latestRequestDateTime, Long frequency) {
         this.healthCheckCallLogId = healthCheckCallLogId;
         this.componentId = componentId;
-        this.latestRequestDate = latestRequestDate;
+        this.latestRequestDateTime = latestRequestDateTime;
         this.frequency = frequency;
     }
 }

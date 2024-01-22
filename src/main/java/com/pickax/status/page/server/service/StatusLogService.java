@@ -2,7 +2,7 @@ package com.pickax.status.page.server.service;
 
 import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import com.pickax.status.page.server.domain.model.ComponentStatusLog;
-import com.pickax.status.page.server.dto.reseponse.LatestHealthCheckCallLogDto;
+import com.pickax.status.page.server.dto.LatestHealthCheckCallLogDto;
 import com.pickax.status.page.server.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class StatusLogService {
         ComponentStatus componentStatus = ComponentStatus.NONE;
 
         for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckCallLogs) {
-            LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDate().toLocalDateTime();
+            LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDateTime().toLocalDateTime();
             LocalDateTime timeLimit = lastRequestDateTime.plusSeconds(latestHealthCheckLog.getFrequency());
             LocalDateTime now = LocalDateTime.now();
 

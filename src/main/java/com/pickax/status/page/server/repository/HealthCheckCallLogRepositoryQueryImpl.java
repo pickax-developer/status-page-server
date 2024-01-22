@@ -1,6 +1,6 @@
 package com.pickax.status.page.server.repository;
 
-import com.pickax.status.page.server.dto.reseponse.LatestHealthCheckCallLogDto;
+import com.pickax.status.page.server.dto.LatestHealthCheckCallLogDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
