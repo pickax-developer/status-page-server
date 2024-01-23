@@ -30,7 +30,7 @@ public class HealthCheckCallLogRepositoryQueryImpl implements HealthCheckCallLog
                 "         FROM health_check_call_logs r\n" +
                 "         GROUP BY r.component_id\n" +
                 "         ) latest_logs\n" +
-                "     LEFT JOIN components c ON c.id = latest_logs.component_id\n" +
+                "     INNER JOIN components c ON c.id = latest_logs.component_id AND c.is_active = true\n" +
                 "WHERE\n" +
                 "      logs.component_id = latest_logs.component_id\n" +
                 "      AND logs.request_at = latest_logs.lastest_request_date";
