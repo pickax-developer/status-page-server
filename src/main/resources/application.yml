@@ -35,3 +35,8 @@ spring:
 logging:
   level:
     com.pickax.status.page.server: debug
+
+security:
+  jwt-config:
+    secret: "&E)H@McQeThWmZq4t7w!z%C*F-JaNdRgUjXn2r5u8x/A?D(G+KbPeShVmYp3s6v9"
+    access-token-expire: 3600000
