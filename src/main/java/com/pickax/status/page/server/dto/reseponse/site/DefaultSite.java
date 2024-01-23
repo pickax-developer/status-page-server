@@ -1,4 +1,4 @@
-package com.pickax.status.page.server.dto.reseponse;
+package com.pickax.status.page.server.dto.reseponse.site;
 
 import com.pickax.status.page.server.domain.enumclass.SiteRegistrationStatus;
 import lombok.AllArgsConstructor;

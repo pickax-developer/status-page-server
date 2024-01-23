@@ -1,4 +1,4 @@
-package com.pickax.status.page.server.dto.reseponse;
+package com.pickax.status.page.server.dto.reseponse.site;
 
 import lombok.Getter;
 
