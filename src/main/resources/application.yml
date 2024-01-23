@@ -1,9 +1,25 @@
 spring:
   datasource:
-    url: ${DB_HOST}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: ${DB_HOST}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: QuackScheduler
+    jdbc:
+      initialize-schema: never
+    properties:
+      org:
+        quartz:
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadsInheritContextClassLoaderOfInitializingThread: true
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect

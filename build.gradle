@@ -42,6 +42,12 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
     annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+
+    // quartz
+    implementation 'org.springframework.boot:spring-boot-starter-quartz:2.7.5'
+
+    // QLRM
+    implementation group: 'org.qlrm', name: 'qlrm', version: '4.0.1'
 }
 
 tasks.named('test') {
