@@ -15,10 +15,10 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StatusLogService {
+public class ComponentStatusLogService {
 
     private final ComponentRepository componentRepository;
-    private final StatusLogRepository statusLogRepository;
+    private final ComponentStatusLogRepository componentStatusLogRepository;
     private final HealthCheckCallLogRepositoryQuery healthCheckCallLogRepositoryQuery;
 
     @Transactional
@@ -35,7 +35,7 @@ public class StatusLogService {
                 componentStatus = ComponentStatus.NO_ISSUES;
                 saveStatusLog(latestHealthCheckLog, lastRequestDateTime, 0L, now, componentStatus);
             } else {
-                Long riskLevel = this.statusLogRepository.findLatestComponentRiskLevel(latestHealthCheckLog.getComponentId());
+                Long riskLevel = this.componentStatusLogRepository.findLatestComponentRiskLevel(latestHealthCheckLog.getComponentId());
                 componentStatus = makeComponentStatusByRiskLevel(riskLevel + 1);
                 log.debug("risk level is {}, component status is {}", riskLevel + 1, componentStatus);
 
@@ -59,7 +59,7 @@ public class StatusLogService {
     }
 
     private void saveStatusLog(LatestHealthCheckCallLogDto latestHealthCheckLog, LocalDateTime lastRequestDateTime, Long riskLevel, LocalDateTime now, ComponentStatus componentStatus) {
-        this.statusLogRepository.save(ComponentStatusLog.create(
+        this.componentStatusLogRepository.save(ComponentStatusLog.create(
                 latestHealthCheckLog.getComponentId(),
                 lastRequestDateTime,
                 latestHealthCheckLog.getFrequency(),

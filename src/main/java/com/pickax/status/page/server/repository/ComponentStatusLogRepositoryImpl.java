@@ -8,7 +8,7 @@ import static com.pickax.status.page.server.domain.model.QComponentStatusLog.*;
 
 @Repository
 @RequiredArgsConstructor
-public class StatusLogRepositoryImpl implements StatusLogRepositoryCustom {
+public class ComponentStatusLogRepositoryImpl implements ComponentStatusLogRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

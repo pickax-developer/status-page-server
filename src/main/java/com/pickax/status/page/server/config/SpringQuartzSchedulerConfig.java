@@ -1,7 +1,7 @@
 package com.pickax.status.page.server.config;
 
 import com.pickax.status.page.server.scheduler.AutoWiringSpringBeanJobFactory;
-import com.pickax.status.page.server.scheduler.StatusLogJob;
+import com.pickax.status.page.server.scheduler.ComponentStatusLogJob;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class SpringQuartzSchedulerConfig {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
         final String JOB_NAME = "COMPONENT_STATUS_INSPECTION";
 
-        jobDetailFactory.setJobClass(StatusLogJob.class);
+        jobDetailFactory.setJobClass(ComponentStatusLogJob.class);
         jobDetailFactory.setName(JOB_NAME);
         jobDetailFactory.setDescription("Invoke Status History service...");
         jobDetailFactory.setDurability(true);
