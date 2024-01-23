@@ -77,7 +77,7 @@ class HealthCheckControllerTest {
                 .andDo(print())
 
                 // then
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.customError").value(ErrorCode.NOT_FOUND_COMPONENT.name()));
     }
 

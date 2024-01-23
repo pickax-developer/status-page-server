@@ -98,4 +98,45 @@ class SiteControllerTest {
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
 	}
+
+	@Test
+	@DisplayName("GET site 상세 조회 api - 성공 200 OK")
+	void getSite() throws Exception {
+		// when
+		Long siteId = 1L;
+		String url = String.format("/sites/%s", siteId);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+						.get(url)
+						.contentType(MediaType.APPLICATION_JSON)
+		)
+				.andDo(print())
+
+				// then
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.name").value("1 name"))
+				.andExpect(jsonPath("$.description").value("1 description"))
+				.andExpect(jsonPath("$.url").value("http://dasfas"))
+				.andExpect(jsonPath("$.status").value("COMPLETED"));
+	}
+
+	@Test
+	@DisplayName("GET site 상세 조회 api - 존재하지 않는 경우 404 NOT_FOUND")
+	void getSiteByNonExistentSiteId() throws Exception {
+		// when
+		String url = String.format("/sites/%s", 9999999999L);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+						.get(url)
+						.contentType(MediaType.APPLICATION_JSON)
+		)
+				.andDo(print())
+
+				// then
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
+	}
 }

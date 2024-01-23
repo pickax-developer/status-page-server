@@ -1,7 +1,6 @@
 package com.pickax.status.page.server.service;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,8 +9,9 @@ import java.util.UUID;
 
 import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
-import com.pickax.status.page.server.dto.reseponse.DefaultSite;
+import com.pickax.status.page.server.dto.reseponse.site.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
+import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,14 +20,16 @@ import org.springframework.stereotype.Service;
 
 import com.pickax.status.page.server.domain.model.MetaTag;
 import com.pickax.status.page.server.domain.model.Site;
-import com.pickax.status.page.server.dto.reseponse.SiteSecretKeyResponseDto;
+import com.pickax.status.page.server.dto.reseponse.site.SiteSecretKeyResponseDto;
 import com.pickax.status.page.server.repository.MetaTagRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
-import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
+import com.pickax.status.page.server.dto.reseponse.site.SiteCreateResponseDto;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import static com.pickax.status.page.server.common.exception.ErrorCode.NOT_FOUND_SITE;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class SiteService {
 	private final MetaTagRepository metaTagRepository;
 
 	@Transactional
-	public SiteResponseDto createSite(SiteCreateRequestDto siteCreateRequestDto) {
+	public SiteCreateResponseDto createSite(SiteCreateRequestDto siteCreateRequestDto) {
 		String secretKey = createSecretKey();
 		Site site = Site.of(siteCreateRequestDto, secretKey);
 
@@ -48,7 +50,7 @@ public class SiteService {
 
 		siteRepository.save(site);
 
-		return SiteResponseDto.from(metaTag.getId(), metaTag.getContent());
+		return SiteCreateResponseDto.from(metaTag.getId(), metaTag.getContent());
 	}
 
 	private MetaTag createMetaTag() {
@@ -68,7 +70,7 @@ public class SiteService {
 	@Transactional
 	public void verifySite(long siteId) {
 		Site site = siteRepository.findById(siteId)
-				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		if (!site.isUnverified()) {
 			throw new CustomException(ErrorCode.INVALID_UNVERIFIED_SITE);
@@ -142,7 +144,7 @@ public class SiteService {
 
 	public MetaTagValidation findValidMetaTag(Long siteId) {
 		Site site = this.siteRepository.findById(siteId)
-				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		if (site.hasValidatedOwnerByMetaTag()) {
 			throw new CustomException(ErrorCode.INVALID_COMPLETED_SITE);
@@ -159,8 +161,14 @@ public class SiteService {
 	@Transactional(readOnly = true)
 	public SiteSecretKeyResponseDto getSecretKey(Long siteId) {
 		Site site = this.siteRepository.findById(siteId)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		return SiteSecretKeyResponseDto.from(site.getSecretKey());
+	}
+
+	@Transactional(readOnly = true)
+	public SiteResponseDto getSite(long siteId) {
+		return siteRepository.getSiteResponse(siteId)
+				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 	}
 }

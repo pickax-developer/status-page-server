@@ -1,24 +1,23 @@
 package com.pickax.status.page.server.controller;
 
+import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.pickax.status.page.server.dto.reseponse.DefaultSite;
+import com.pickax.status.page.server.dto.reseponse.site.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
 import org.springframework.web.bind.annotation.*;
 
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
-import com.pickax.status.page.server.dto.reseponse.SiteResponseDto;
-import com.pickax.status.page.server.dto.reseponse.SiteSecretKeyResponseDto;
+import com.pickax.status.page.server.dto.reseponse.site.SiteCreateResponseDto;
+import com.pickax.status.page.server.dto.reseponse.site.SiteSecretKeyResponseDto;
 import com.pickax.status.page.server.service.SiteService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import java.io.IOException;
 
 import java.util.List;
 
@@ -31,10 +30,10 @@ public class SiteController {
 	private final SiteService siteService;
 
 	@PostMapping
-	public ResponseEntity<SiteResponseDto> createSite(
+	public ResponseEntity<SiteCreateResponseDto> createSite(
 		@RequestBody @Valid SiteCreateRequestDto siteCreateRequestDto
 	) {
-		SiteResponseDto siteResponse = siteService.createSite(siteCreateRequestDto);
+		SiteCreateResponseDto siteResponse = siteService.createSite(siteCreateRequestDto);
 		return ResponseEntity.ok(siteResponse);
 	}
 
@@ -49,6 +48,11 @@ public class SiteController {
 		Long loggedInUserId = 1L;
 
 		return ResponseEntity.ok(this.siteService.findAllByUserId(loggedInUserId));
+	}
+
+	@GetMapping("/{siteId}")
+	public ResponseEntity<SiteResponseDto> getSite(@PathVariable long siteId) {
+		return ResponseEntity.ok(this.siteService.getSite(siteId));
 	}
 
 	@GetMapping("/{siteId}/meta-tags")
