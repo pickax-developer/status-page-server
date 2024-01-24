@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+	private static final int BEARER_PREFIX_LENGTH = 7;
 
 	private final TokenProvider tokenProvider;
 
@@ -41,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7);
+			return bearerToken.substring(BEARER_PREFIX_LENGTH);
 		}
 		return null;
 	}
