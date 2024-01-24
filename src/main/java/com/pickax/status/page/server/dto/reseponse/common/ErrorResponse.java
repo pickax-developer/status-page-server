@@ -68,4 +68,13 @@ public class ErrorResponse {
                         .build()
                 );
     }
+
+    public static ErrorResponse parseError(ErrorCode errorCode, String message) {
+        return ErrorResponse.builder()
+            .status(errorCode.getHttpStatus().value())
+            .error(errorCode.getHttpStatus().name())
+            .customError(errorCode.name())
+            .message(message)
+            .build();
+    }
 }

@@ -2,6 +2,8 @@ package com.pickax.status.page.server.security.jwt;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	}
 
 	private String getJwtFromRequest(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
+		String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);
 		}
