@@ -14,7 +14,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
@@ -83,10 +82,6 @@ public class SpringQuartzSchedulerConfig {
     @Bean
     public SchedulerFactoryBean scheduler(Trigger trigger, JobDetail job, DataSource quartzDataSource) {
         SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
-        final String QUARTZ_CONFIG_PATH = "application.yml";
-
-        schedulerFactory.setConfigLocation(new ClassPathResource(QUARTZ_CONFIG_PATH));
-
         log.debug("Setting the Scheduler up");
         schedulerFactory.setJobFactory(springBeanJobFactory());
         schedulerFactory.setJobDetails(job);

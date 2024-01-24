@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveListResponseDto;
-import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,9 +35,7 @@ public class ComponentController {
 
 	@GetMapping("/{siteId}/components/active")
 	public ResponseEntity<ComponentActiveListResponseDto> getActiveComponents(@PathVariable Long siteId) {
-		List<ComponentActiveResponseDto> components = componentService.getActiveComponents(siteId);
-		ComponentActiveListResponseDto componentActiveListResponseDto = new ComponentActiveListResponseDto(components);
-		return ResponseEntity.ok(componentActiveListResponseDto);
+		return ResponseEntity.ok(componentService.getActiveComponents(siteId));
 	}
 
 	@GetMapping("/{siteId}/components")
