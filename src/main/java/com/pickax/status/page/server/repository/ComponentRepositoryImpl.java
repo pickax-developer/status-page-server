@@ -3,6 +3,7 @@ package com.pickax.status.page.server.repository;
 import static com.pickax.status.page.server.domain.model.QComponent.*;
 import static com.pickax.status.page.server.domain.model.QSite.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +31,9 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
 				component.id,
 				component.name,
 				component.description,
-				component.componentStatus
-			)
-			)
+				component.componentStatus,
+                component.lastUpdatedDate
+			))
 			.from(component)
 			.where(
 				component.site.id.eq(siteId),
@@ -71,10 +72,11 @@ public class ComponentRepositoryImpl implements ComponentRepositoryCustom {
     }
 
 	@Override
-	public void updateComponentStatus(Long componentId, ComponentStatus componentStatus) {
+	public void updateComponentStatus(Long componentId, ComponentStatus componentStatus, LocalDateTime lastUpdatedDate) {
 		queryFactory
 				.update(component)
 				.set(component.componentStatus, componentStatus)
+				.set(component.lastUpdatedDate, lastUpdatedDate)
 				.where(component.id.eq(componentId))
 				.execute();
 	}

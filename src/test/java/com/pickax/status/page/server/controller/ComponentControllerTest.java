@@ -47,7 +47,8 @@ class ComponentControllerTest {
 
 			// then
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.componentActiveResponseDtoList.size()").value("1"));
+			.andExpect(jsonPath("$.componentActiveResponseDtoList.size()").value("5"))
+			.andExpect(jsonPath("$.lastUpdatedDate").value("2022-12-08T11:44:30.327959"));
 	}
 
 	@Test
@@ -85,7 +86,7 @@ class ComponentControllerTest {
 
 			// then
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.componentResponseDtoList.size()").value("2"));
+			.andExpect(jsonPath("$.componentResponseDtoList.size()").value("6"));
 	}
 
 	@Test

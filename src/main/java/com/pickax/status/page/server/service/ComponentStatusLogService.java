@@ -1,6 +1,7 @@
 package com.pickax.status.page.server.service;
 
 import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
+import com.pickax.status.page.server.domain.model.Component;
 import com.pickax.status.page.server.domain.model.ComponentStatusLog;
 import com.pickax.status.page.server.dto.LatestHealthCheckCallLogDto;
 import com.pickax.status.page.server.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,9 +26,10 @@ public class ComponentStatusLogService {
     @Transactional
     public void inspectHealthCheckCall() {
         List<LatestHealthCheckCallLogDto> latestHealthCheckCallLogs = healthCheckCallLogRepositoryQuery.findLatestLogsByComponentId();
-        ComponentStatus componentStatus = ComponentStatus.NONE;
+        ComponentStatus componentStatus;
 
         for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckCallLogs) {
+            final Long componentId = latestHealthCheckLog.getComponentId();
             LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDateTime().toLocalDateTime();
             LocalDateTime timeLimit = lastRequestDateTime.plusSeconds(latestHealthCheckLog.getFrequency());
             LocalDateTime now = LocalDateTime.now();
@@ -35,14 +38,14 @@ public class ComponentStatusLogService {
                 componentStatus = ComponentStatus.NO_ISSUES;
                 saveStatusLog(latestHealthCheckLog, lastRequestDateTime, 0L, now, componentStatus);
             } else {
-                Long riskLevel = this.componentStatusLogRepository.findLatestComponentRiskLevel(latestHealthCheckLog.getComponentId());
+                Long riskLevel = this.componentStatusLogRepository.findLatestComponentRiskLevel(componentId);
                 componentStatus = makeComponentStatusByRiskLevel(riskLevel + 1);
                 log.debug("risk level is {}, component status is {}", riskLevel + 1, componentStatus);
 
                 saveStatusLog(latestHealthCheckLog, lastRequestDateTime, riskLevel + 1, now, componentStatus);
             }
 
-            componentRepository.updateComponentStatus(latestHealthCheckLog.getComponentId(), componentStatus);
+            componentRepository.updateComponentStatus(componentId, componentStatus, now);
         }
 
     }

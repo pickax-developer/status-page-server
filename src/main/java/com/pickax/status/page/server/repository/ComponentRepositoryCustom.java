@@ -1,5 +1,6 @@
 package com.pickax.status.page.server.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +14,7 @@ public interface ComponentRepositoryCustom {
 
 	List<ComponentResponseDto> getComponentResponses(Long siteId);
 
-	void updateComponentStatus(Long componentId, ComponentStatus componentStatus);
+	void updateComponentStatus(Long componentId, ComponentStatus componentStatus, LocalDateTime lastUpdatedDate);
 
 	Optional<Component> getComponent(Long id);
 }

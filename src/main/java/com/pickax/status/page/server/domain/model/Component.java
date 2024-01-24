@@ -17,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name = "components")
@@ -46,6 +48,9 @@ public class Component {
 	@JoinColumn(name = "site_id")
 	private Site site;
 
+	@Column(name = "last_updated_at")
+	private LocalDateTime lastUpdatedDate;
+
 	private Component(String name, String description, ComponentStatus status, Long frequency, boolean isActive, Site site) {
 		this.name = name;
 		this.description = description;
@@ -58,5 +63,4 @@ public class Component {
 	public static Component create(String name, String description, ComponentStatus status, Long frequency, boolean isActive, Site site) {
 		return new Component(name, description, status, frequency, isActive, site);
 	}
-
 }

@@ -6,11 +6,15 @@ import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import com.pickax.status.page.server.domain.model.Component;
 import com.pickax.status.page.server.domain.model.Site;
 import com.pickax.status.page.server.dto.request.ComponentCreateRequestDto;
+import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveListResponseDto;
 import com.pickax.status.page.server.dto.reseponse.component.ComponentResponseDto;
 import com.pickax.status.page.server.repository.ComponentRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import jakarta.persistence.EntityNotFoundException;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -45,9 +49,16 @@ public class ComponentService {
     }
 
 	@Transactional(readOnly = true)
-	public List<ComponentActiveResponseDto> getActiveComponents(Long siteId) {
+	public ComponentActiveListResponseDto getActiveComponents(Long siteId) {
 		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
-		return componentRepository.getComponentActiveResponses(siteId);
+		List<ComponentActiveResponseDto> componentActiveResponses = componentRepository.getComponentActiveResponses(siteId);
+
+		final List<ComponentActiveResponseDto> notNullDates = componentActiveResponses.stream()
+				.filter(componentActiveResponseDto -> componentActiveResponseDto.getLastUpdatedDate() != null)
+				.sorted(Comparator.comparing(ComponentActiveResponseDto::getLastUpdatedDate).reversed())
+				.collect(Collectors.toList());
+
+		return ComponentActiveListResponseDto.of(componentActiveResponses, notNullDates.isEmpty() ? null : notNullDates.get(0).getLastUpdatedDate());
 	}
 
 	@Transactional(readOnly = true)
