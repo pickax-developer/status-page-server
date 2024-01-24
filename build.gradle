@@ -49,6 +49,12 @@ dependencies {
     // QLRM
     implementation group: 'org.qlrm', name: 'qlrm', version: '4.0.1'
 
+    // java mail sender
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
