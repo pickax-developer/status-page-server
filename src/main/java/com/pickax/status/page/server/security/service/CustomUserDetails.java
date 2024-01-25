@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 	private final Long id;
+	// TODO
 	// private final String nickname;
 	// private final String email;
 
