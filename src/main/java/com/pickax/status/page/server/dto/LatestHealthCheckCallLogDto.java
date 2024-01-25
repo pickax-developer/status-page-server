@@ -19,11 +19,19 @@ public class LatestHealthCheckCallLogDto {
 
     private Long frequency;
 
+    private String componentStatus;
 
-    public LatestHealthCheckCallLogDto(Long healthCheckCallLogId, Long componentId, Timestamp latestRequestDateTime, Long frequency) {
+    private String componentName;
+
+    private String siteName;
+
+    public LatestHealthCheckCallLogDto(Long healthCheckCallLogId, Long componentId, Timestamp latestRequestDateTime, Long frequency, String componentStatus, String componentName, String siteName) {
         this.healthCheckCallLogId = healthCheckCallLogId;
         this.componentId = componentId;
         this.latestRequestDateTime = latestRequestDateTime;
         this.frequency = frequency;
+        this.componentStatus = componentStatus;
+        this.componentName = componentName;
+        this.siteName = siteName;
     }
 }

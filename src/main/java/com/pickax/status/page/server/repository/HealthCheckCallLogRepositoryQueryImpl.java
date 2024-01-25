@@ -15,7 +15,6 @@ public class HealthCheckCallLogRepositoryQueryImpl implements HealthCheckCallLog
 
     private final EntityManager entityManager;
 
-
     @Override
     public List<LatestHealthCheckCallLogDto> findLatestLogsByComponentId() {
         String sql = "" +
@@ -23,7 +22,10 @@ public class HealthCheckCallLogRepositoryQueryImpl implements HealthCheckCallLog
                 "       logs.id AS healthCheckRequestLogId,\n" +
                 "       logs.component_id AS componentId,\n" +
                 "       logs.request_at AS latestRequestDate,\n" +
-                "       c.frequency AS frequency\n" +
+                "       c.frequency AS frequency,\n" +
+                "       c.component_status AS componentStatus,\n" +
+                "       c.name AS componentName,\n" +
+                "       s.name AS siteName\n" +
                 "FROM \n" +
                 "     health_check_call_logs logs,\n" +
                 "        (SELECT r.component_id, MAX(r.request_at) AS lastest_request_date\n" +
@@ -31,6 +33,7 @@ public class HealthCheckCallLogRepositoryQueryImpl implements HealthCheckCallLog
                 "         GROUP BY r.component_id\n" +
                 "         ) latest_logs\n" +
                 "     INNER JOIN components c ON c.id = latest_logs.component_id AND c.is_active = true\n" +
+                "     INNER JOIN sites s on c.site_id = s.id AND s.site_registration_status = 'COMPLETED'\n" +
                 "WHERE\n" +
                 "      logs.component_id = latest_logs.component_id\n" +
                 "      AND logs.request_at = latest_logs.lastest_request_date";
