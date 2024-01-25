@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -32,35 +31,35 @@ public class ComponentStatusLogService {
     @Transactional
     public void inspectHealthCheckCall() {
         List<LatestHealthCheckCallLogDto> latestHealthCheckCallLogs = healthCheckCallLogRepositoryQuery.findLatestLogsByComponentId();
-        ComponentStatus currentComponentStatus;
+        ComponentStatus changedComponentStatus;
 
         for (LatestHealthCheckCallLogDto latestHealthCheckLog : latestHealthCheckCallLogs) {
             final Long componentId = latestHealthCheckLog.getComponentId();
             LocalDateTime lastRequestDateTime = latestHealthCheckLog.getLatestRequestDateTime().toLocalDateTime();
             LocalDateTime timeLimit = lastRequestDateTime.plusSeconds(latestHealthCheckLog.getFrequency());
             LocalDateTime now = LocalDateTime.now();
-            ComponentStatus previousComponentStatus = ComponentStatus.valueOf(latestHealthCheckLog.getComponentStatus());
+            ComponentStatus currentComponentStatus = ComponentStatus.valueOf(latestHealthCheckLog.getComponentStatus());
 
             if (now.isBefore(timeLimit) || now.isEqual(timeLimit)) {
-                currentComponentStatus = ComponentStatus.NO_ISSUES;
-                saveStatusLog(latestHealthCheckLog, lastRequestDateTime, 0L, now, currentComponentStatus);
+                changedComponentStatus = ComponentStatus.NO_ISSUES;
+                saveStatusLog(latestHealthCheckLog, lastRequestDateTime, 0L, now, changedComponentStatus);
             } else {
                 Long riskLevel = this.componentStatusLogRepository.findLatestComponentRiskLevel(componentId);
-                currentComponentStatus = makeComponentStatusByRiskLevel(riskLevel + 1);
-                log.debug("risk level is {}, component status is {}", riskLevel + 1, currentComponentStatus);
+                changedComponentStatus = makeComponentStatusByRiskLevel(riskLevel + 1);
+                log.debug("risk level is {}, component status is {}", riskLevel + 1, changedComponentStatus);
 
-                saveStatusLog(latestHealthCheckLog, lastRequestDateTime, riskLevel + 1, now, currentComponentStatus);
+                saveStatusLog(latestHealthCheckLog, lastRequestDateTime, riskLevel + 1, now, changedComponentStatus);
             }
 
             Component component = componentRepository.findById(latestHealthCheckLog.getComponentId())
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMPONENT));
 
-            if (component.hasToBeChangedStatus(currentComponentStatus)) {
-                component.changedStatus(currentComponentStatus);
+            if (component.hasToBeChangedStatus(changedComponentStatus)) {
+                component.changeStatus(changedComponentStatus);
 
                 eventPublisher.publishEvent(ComponentStatusInspectedEvent.builder()
-                        .previousComponentStatus(previousComponentStatus)
                         .currentComponentStatus(currentComponentStatus)
+                        .changedComponentStatus(changedComponentStatus)
                         .componentName(latestHealthCheckLog.getComponentName())
                         .siteName(latestHealthCheckLog.getSiteName())
                         .username(null)

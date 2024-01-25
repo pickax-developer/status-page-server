@@ -19,9 +19,9 @@ public class HealthCheckCallLogRepositoryQueryImpl implements HealthCheckCallLog
     public List<LatestHealthCheckCallLogDto> findLatestLogsByComponentId() {
         String sql = "" +
                 "SELECT\n" +
-                "       logs.id AS healthCheckRequestLogId,\n" +
+                "       logs.id AS healthCheckCallLogId,\n" +
                 "       logs.component_id AS componentId,\n" +
-                "       logs.request_at AS latestRequestDate,\n" +
+                "       logs.request_at AS latestRequestDateTime,\n" +
                 "       c.frequency AS frequency,\n" +
                 "       c.component_status AS componentStatus,\n" +
                 "       c.name AS componentName,\n" +

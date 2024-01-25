@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ComponentStatusInspectedEvent {
 
-    private ComponentStatus previousComponentStatus;
-
     private ComponentStatus currentComponentStatus;
+
+    private ComponentStatus changedComponentStatus;
 
     private String siteName;
 
@@ -21,10 +21,10 @@ public class ComponentStatusInspectedEvent {
 
     @Builder
     public ComponentStatusInspectedEvent(
-            ComponentStatus previousComponentStatus, ComponentStatus currentComponentStatus, String siteName, String componentName, String username
+            ComponentStatus currentComponentStatus, ComponentStatus changedComponentStatus, String siteName, String componentName, String username
     ) {
-        this.previousComponentStatus = previousComponentStatus;
         this.currentComponentStatus = currentComponentStatus;
+        this.changedComponentStatus = changedComponentStatus;
         this.siteName = siteName;
         this.componentName = componentName;
         this.username = username;

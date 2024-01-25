@@ -57,7 +57,7 @@
                     <tr>
                         <td>
                             <p>안녕하세요, <span th:text="${notification.username}"></span>님</p>
-                            <p><span th:text="${notification.componentName}"></span>의 상태가 <span th:text="${notification.previousComponentStatus}"></span>에서 <span th:text="${notification.currentComponentStatus}"></span> 로 변경되었습니다. </p>
+                            <p><span th:text="${notification.componentName}"></span>의 상태가 <span th:text="${notification.getCurrentComponentStatus}"></span>에서 <span th:text="${notification.getChangedComponentStatus}"></span> 로 변경되었습니다. </p>
                             <p>-Quack Run-</p>
                         </td>
 
