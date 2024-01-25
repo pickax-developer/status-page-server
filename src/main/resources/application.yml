@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: ${ACTIVE_PROFILE}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: ${DB_HOST}
@@ -54,3 +56,9 @@ security:
   jwt-config:
     secret: "&E)H@McQeThWmZq4t7w!z%C*F-JaNdRgUjXn2r5u8x/A?D(G+KbPeShVmYp3s6v9"
     access-token-expire: 3600000
+
+slack:
+  token: ${BOT_USER_OAUTH_TOKEN}
+  channel:
+    monitor: '#error-quack-run'
+

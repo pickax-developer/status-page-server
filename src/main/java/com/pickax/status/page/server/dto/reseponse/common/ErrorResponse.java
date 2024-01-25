@@ -52,10 +52,8 @@ public class ErrorResponse {
     }
 
     public static ResponseEntity<ErrorResponse> toResponseEntity(
-            ErrorCode errorCode, final BindingResult bindingResult, HttpServletRequest request
+            ErrorCode errorCode, final String message, List<FieldError> fieldErrors, HttpServletRequest request
     ) {
-        final List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        String message = fieldErrors.get(0) == null ? "" : fieldErrors.get(0).getDefaultMessage();
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(ErrorResponse.builder()
