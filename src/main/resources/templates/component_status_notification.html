@@ -48,7 +48,7 @@
                     <tr>
                         <td>
                             <h1 style="margin: 1em 0;font-size: 2em; text-align:center;">
-                                <span th:text="${component}"></span>
+                                <span th:text="${notification.siteName}"></span>-<span th:text="${notification.componentName}"></span>
                                 <br />
                                 경고/정상화 알림</h1>
                             <br>
@@ -56,9 +56,8 @@
                     </tr>
                     <tr>
                         <td>
-<!--                            <p>안녕하세요, {{name}}님</p>-->
-                            <p>안녕하세요, <span th:text="${username}"></span>님</p>
-                            <p><span th:text="${component}"></span>의 상태가 <span th:text="${previousComponentStatus}"></span>에서 <span th:text="${currentComponentStatus}"></span> 로 변경되었습니다. </p>
+                            <p>안녕하세요, <span th:text="${notification.username}"></span>님</p>
+                            <p><span th:text="${notification.componentName}"></span>의 상태가 <span th:text="${notification.previousComponentStatus}"></span>에서 <span th:text="${notification.currentComponentStatus}"></span> 로 변경되었습니다. </p>
                             <p>-Quack Run-</p>
                         </td>
 

@@ -1,8 +1,8 @@
 package com.pickax.status.page.server.common;
 
+import com.pickax.status.page.server.common.event.ComponentStatusInspectedEvent;
 import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
-import com.pickax.status.page.server.domain.enumclass.ComponentStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +21,22 @@ public class EmailSender {
     private final SpringTemplateEngine templateEngine;
 
     @Async
-    public void sendEmail() {
+    public void sendComponentStatusChangedNotifyEmail(ComponentStatusInspectedEvent event) {
         MimeMessage message = javaMailSender.createMimeMessage();
         boolean hasImage = false;
         final String ENCODING = "UTF-8";
 
-        // 이메일을 전송하는 데 필요한 데이터들은 추후에 DTO 로 처리할 예정입니다.
+        String emailSubject = "[QUACK_RUN] 컴포넌트 상태 변경 알림입니다.";
+        String htmlTemplate = "component_status_notification.html";
+        // TODO. User 도메인이 만들어지면 해당 사이트 소유자 이메일로 메일을 전송합니다.
+        String receiverEmail = "your_email@gmail.com";
         try {
             MimeMessageHelper messageHelper = new MimeMessageHelper(message, hasImage, ENCODING);
-            messageHelper.setSubject("[QUACK_RUN] 컴포넌트 상태 알림입니다.");
-            messageHelper.setTo("kellykang13@gmail.com");
+            messageHelper.setSubject(emailSubject);
+            messageHelper.setTo(receiverEmail);
 
-            Context context = createContext();
-            String text = templateEngine.process("component_status_notification.html", context);
+            Context context = createContext(event);
+            String text = templateEngine.process(htmlTemplate, context);
             messageHelper.setText(text, true);
 
             javaMailSender.send(message);
@@ -43,14 +46,9 @@ public class EmailSender {
         }
     }
 
-    private Context createContext() {
-        // 데이터를 전달할 클래스 생성 전이므로 테스트용으로 하드코딩해서 사용합니다.
+    private Context createContext(ComponentStatusInspectedEvent event) {
         Context context = new Context();
-        context.setVariable("username", "kelly");
-        context.setVariable("component", "Notification - 네이버 알림 서버");
-        context.setVariable("previousComponentStatus", ComponentStatus.WARN.toString());
-        context.setVariable("currentComponentStatus", ComponentStatus.NO_ISSUES.toString());
-
+        context.setVariable("notification", event);
         return context;
     }
 

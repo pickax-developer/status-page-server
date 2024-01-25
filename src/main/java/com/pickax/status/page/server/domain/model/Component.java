@@ -59,4 +59,13 @@ public class Component {
 		return new Component(name, description, status, frequency, isActive, site);
 	}
 
+	public boolean hasToBeChangedStatus(ComponentStatus currentComponentStatus) {
+		return !this.componentStatus.equals(currentComponentStatus);
+	}
+
+	public void changedStatus(ComponentStatus currentComponentStatus) {
+		if (hasToBeChangedStatus(currentComponentStatus)) {
+			this.componentStatus = currentComponentStatus;
+		}
+	}
 }
