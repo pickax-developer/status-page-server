@@ -63,4 +63,14 @@ public class Component {
 	public static Component create(String name, String description, ComponentStatus status, Long frequency, boolean isActive, Site site) {
 		return new Component(name, description, status, frequency, isActive, site);
 	}
+
+	public boolean hasToBeChangedStatus(ComponentStatus currentComponentStatus) {
+		return !this.componentStatus.equals(currentComponentStatus);
+	}
+
+	public void changedStatus(ComponentStatus currentComponentStatus) {
+		if (hasToBeChangedStatus(currentComponentStatus)) {
+			this.componentStatus = currentComponentStatus;
+		}
+	}
 }
