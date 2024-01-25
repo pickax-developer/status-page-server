@@ -64,13 +64,13 @@ public class Component {
 		return new Component(name, description, status, frequency, isActive, site);
 	}
 
-	public boolean hasToBeChangedStatus(ComponentStatus currentComponentStatus) {
-		return !this.componentStatus.equals(currentComponentStatus);
+	public boolean hasToBeChangedStatus(ComponentStatus changedComponentStatus) {
+		return !this.componentStatus.equals(changedComponentStatus);
 	}
 
-	public void changedStatus(ComponentStatus currentComponentStatus) {
-		if (hasToBeChangedStatus(currentComponentStatus)) {
-			this.componentStatus = currentComponentStatus;
+	public void changeStatus(ComponentStatus changedComponentStatus) {
+		if (hasToBeChangedStatus(changedComponentStatus)) {
+			this.componentStatus = changedComponentStatus;
 		}
 	}
 }
