@@ -63,9 +63,9 @@ public class Site {
 	}
 
 	private Site(SiteCreateRequestDto siteCreateRequestDto, String secretKey) {
-		this.name = siteCreateRequestDto.getName();
-		this.description = siteCreateRequestDto.getDescription();
-		this.url = siteCreateRequestDto.getUrl();
+		this.name = siteCreateRequestDto.name();
+		this.description = siteCreateRequestDto.description();
+		this.url = siteCreateRequestDto.url();
 		this.siteRegistrationStatus = SiteRegistrationStatus.UNVERIFIED;
 		this.secretKey = secretKey;
 	}
