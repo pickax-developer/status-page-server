@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: ${ACTIVE_PROFILE}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: ${DB_HOST}
@@ -61,4 +59,7 @@ slack:
   token: ${BOT_USER_OAUTH_TOKEN}
   channel:
     monitor: '#error-quack-run'
+
+profiles:
+  name: ${ACTIVE_PROFILE}
 
