@@ -69,4 +69,4 @@ jobs:
 
             echo "env var $ACTIVE_PROFILE"
 
-            java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            java -jar -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
