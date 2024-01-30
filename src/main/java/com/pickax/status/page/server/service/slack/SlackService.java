@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class SlackService {
-    @Value(value = "${spring.profiles.active}")
+    @Value(value = "${profiles.name}")
     String profile;
 
     @Value(value = "${slack.token}")
