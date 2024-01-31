@@ -2,6 +2,8 @@ package com.pickax.status.page.server.service;
 
 import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +50,8 @@ public class AuthService {
 			throw new CustomException(INVALID_INPUT_VALUE);
 		}
 
-		Site site = siteRepository.findByUserId(userId);
+		Site site = siteRepository.findByUserId(userId)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		delete(user, site);
 		// TODO 회원탈퇴 메일 전송
