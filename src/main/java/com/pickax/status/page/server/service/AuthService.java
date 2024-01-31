@@ -4,9 +4,12 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.pickax.status.page.server.common.event.UserResignEvent;
 import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
 import com.pickax.status.page.server.domain.enumclass.UserStatus;
@@ -20,7 +23,6 @@ import com.pickax.status.page.server.repository.EmailAuthenticationRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.repository.UserRepository;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -34,6 +36,8 @@ public class AuthService {
 	private final EmailAuthenticationRepository emailAuthenticationRepository;
 
 	private final EmailService emailService;
+
+	private final ApplicationEventPublisher eventPublisher;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -74,8 +78,7 @@ public class AuthService {
 		List<Site> sites = siteRepository.findByUserId(userId);
 		delete(user, sites);
 
-		// TODO 회원탈퇴 메일 전송
-		// eventPublisher.publishEvent(UserResignEvent);
+		eventPublisher.publishEvent(new UserResignEvent(user.getEmail()));
 	}
 
 	private void delete(User user, List<Site> sites) {
