@@ -3,7 +3,8 @@ package com.pickax.status.page.server.security.jwt;
 import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,13 +28,10 @@ public class JwtFilter extends OncePerRequestFilter {
 		String jwt = getJwtFromRequest(request);
 
 		if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-
-			// TODO user 정보 contextHolder 에 넣음
-			// String username = tokenProvider.getUsernameFromJWT(jwt);
-
-			// UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-			// UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-			// SecurityContextHolder.getContext().setAuthentication(authentication);
+			Authentication authentication = tokenProvider.getAuthentication(jwt);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		} else {
+			log.info("해당 요청 URI: {} 에 JWT 토큰이 없습니다.", request.getRequestURI());
 		}
 
 		chain.doFilter(request, response);

@@ -1,19 +1,17 @@
 package com.pickax.status.page.server.security.config;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.pickax.status.page.server.security.jwt.JwtAccessDeniedHandler;
@@ -71,7 +69,7 @@ public class SecurityConfig {
 
 			// 허용 설정
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/sites/**", "/components/**", "/health-check/**").permitAll()
+				.requestMatchers("/sites/**", "/components/**", "/health-check/**", "/auth/login").permitAll()
 				.anyRequest().authenticated()
 			)
 
@@ -79,5 +77,10 @@ public class SecurityConfig {
 			.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
+	}
+
+	@Bean
+	public static BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 }

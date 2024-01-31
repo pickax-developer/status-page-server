@@ -1,9 +1,9 @@
 package com.pickax.status.page.server.security.service;
 
-import java.util.List;
-
+import com.pickax.status.page.server.common.exception.CustomException;
+import com.pickax.status.page.server.common.exception.ErrorCode;
+import com.pickax.status.page.server.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +15,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
+	private final UserRepository userRepository;
+
 	@Override
 	@Transactional
 	public CustomUserDetails loadUserByUsername(String email) {
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-		// TODO
-		// User user = userRepository.getUserBySignIn(email)
-		// 	.orElseThrow(
-		// 		() -> new UsernameNotFoundException(localeMessage.getMessage(ErrorCode.INVALID_USER.toString())));
-		//
-		return CustomUserDetails.of(new User());
+		return CustomUserDetails.of(user);
 	}
 }
