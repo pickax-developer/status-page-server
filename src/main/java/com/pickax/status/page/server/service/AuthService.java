@@ -2,7 +2,7 @@ package com.pickax.status.page.server.service;
 
 import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,22 +47,27 @@ public class AuthService {
 			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
 
 		if (!passwordEncoder.matches(userResignRequestDto.password(), user.getPassword())) {
-			throw new CustomException(INVALID_INPUT_VALUE);
+			throw new CustomException(INVALID_PASSWORD);
 		}
 
-		Site site = siteRepository.findByUserId(userId)
-			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
+		List<Site> sites = siteRepository.findByUserId(userId);
+		delete(user, sites);
 
-		delete(user, site);
 		// TODO 회원탈퇴 메일 전송
 		// eventPublisher.publishEvent(UserResignEvent);
 	}
 
-	private void delete(User user, Site site) {
+	private void delete(User user, List<Site> sites) {
+		deleteUser(user);
+		sites.forEach(this::cancelSiteAndDeactivateComponents);
+	}
+
+	private void deleteUser(User user) {
 		user.delete();
-		site.delete();
-		for (Component component : site.getComponents()) {
-			component.delete();
-		}
+	}
+
+	private void cancelSiteAndDeactivateComponents(Site site) {
+		site.cancel();
+		site.getComponents().forEach(Component::deactivate);
 	}
 }

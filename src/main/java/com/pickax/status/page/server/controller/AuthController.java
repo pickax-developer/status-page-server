@@ -26,7 +26,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/resign")
-	public ResponseEntity<Void> resign(UserResignRequestDto userResignRequestDto) {
+	public ResponseEntity<Void> resign(@RequestBody @Valid UserResignRequestDto userResignRequestDto) {
 		authService.resign(userResignRequestDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

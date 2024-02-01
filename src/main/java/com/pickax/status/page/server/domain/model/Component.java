@@ -74,7 +74,7 @@ public class Component {
 		}
 	}
 
-	public void delete() {
+	public void deactivate() {
 		isActive = false;
 	}
 }

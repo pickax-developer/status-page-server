@@ -90,7 +90,7 @@ public class Site {
 		return this.getUser().getId().equals(requesterId);
 	}
 
-	public void delete() {
+	public void cancel() {
 		siteRegistrationStatus = SiteRegistrationStatus.CANCELED;
 	}
 }
