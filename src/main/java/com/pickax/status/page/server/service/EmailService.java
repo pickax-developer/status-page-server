@@ -3,6 +3,7 @@ package com.pickax.status.page.server.service;
 import com.pickax.status.page.server.common.email.EmailSender;
 import com.pickax.status.page.server.common.email.MailMessageContext;
 import com.pickax.status.page.server.common.event.ComponentStatusInspectedEvent;
+import com.pickax.status.page.server.common.event.UserResignEvent;
 import com.pickax.status.page.server.domain.enumclass.Mail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,20 @@ public class EmailService {
                 .mailType(Mail.SIGNUP_EMAIL_AUTHENTICATION_CODE)
                 .to(receiverEmail)
                 .build();
+    }
+
+    public void sendUserResignEmail(UserResignEvent userResignEvent) {
+        MailMessageContext messageContext = createUserResignEmailContext(userResignEvent);
+        emailSender.send(messageContext);
+    }
+
+    private MailMessageContext createUserResignEmailContext(UserResignEvent userResignEvent) {
+        Context context = new Context();
+        context.setVariable("receiverEmail", userResignEvent.email());
+        return MailMessageContext.builder()
+            .context(context)
+            .mailType(Mail.USER_RESIGN)
+            .to(userResignEvent.email())
+            .build();
     }
 }
