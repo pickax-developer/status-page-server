@@ -6,6 +6,7 @@ import com.pickax.status.page.server.domain.enumclass.UserStatus;
 import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.UserDto;
 import com.pickax.status.page.server.dto.request.LoginRequestDto;
+import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
 import com.pickax.status.page.server.repository.UserRepository;
 import com.pickax.status.page.server.security.config.SecurityConfig;
 import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
@@ -25,8 +26,19 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+
+    private final EmailService emailService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
+
+    @Transactional
+    public void authenticateEmailForSignup(EmailAuthRequestDto emailAuthRequestDto) {
+        userRepository.getUser(emailAuthRequestDto.getEmail(), UserStatus.JOIN).ifPresent(user -> {
+            throw new CustomException(ErrorCode.DUPLICATE_USER);
+        });
+
+        emailService.sendEmailAuthenticationCodeForSignup(emailAuthRequestDto.getEmail());
+    }
 
 
     @Transactional

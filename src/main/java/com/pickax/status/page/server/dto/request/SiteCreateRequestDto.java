@@ -4,24 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-public class SiteCreateRequestDto {
+public record SiteCreateRequestDto(
+	@NotBlank String name,
 
-	@NotBlank
-	private String name;
+	String description,
 
-	private String description;
+	@NotBlank String url
 
-	@NotBlank
-	private String url;
-
-	private SiteCreateRequestDto(String name, String description, String url) {
-		this.name = name;
-		this.description = description;
-		this.url = url;
-	}
-
+) {
 	public static SiteCreateRequestDto of(String name, String description, String url) {
 		return new SiteCreateRequestDto(name, description, url);
 	}

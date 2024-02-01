@@ -2,7 +2,7 @@ package com.pickax.status.page.server.common.exception;
 
 import com.pickax.status.page.server.common.message.LocaleMessageConverter;
 import com.pickax.status.page.server.dto.reseponse.common.ErrorResponse;
-import com.pickax.status.page.server.service.slack.SlackService;
+import com.pickax.status.page.server.service.slack.ErrorAlertService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
 	private final LocaleMessageConverter localeMessage;
-	private final SlackService slackService;
+	private final ErrorAlertService errorAlertService;
 
 	@ExceptionHandler(value = {CustomException.class})
 	protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {
@@ -49,6 +49,6 @@ public class GlobalExceptionHandler {
 	}
 
 	private void sendErrorMessageToSlack(Exception e, String message, HttpStatus httpStatus) {
-		slackService.sendErrorMessage(e, message, httpStatus);
+		errorAlertService.sendErrorMessage(e, message, httpStatus);
 	}
 }

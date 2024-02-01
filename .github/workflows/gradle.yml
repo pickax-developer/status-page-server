@@ -10,10 +10,9 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  build-and-deploy:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -70,3 +69,20 @@ jobs:
             echo "env var $ACTIVE_PROFILE"
 
             java -jar -Dspring.profiles.active=$ACTIVE_PROFILE $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            
+
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Run tests
+        run: ./gradlew test
