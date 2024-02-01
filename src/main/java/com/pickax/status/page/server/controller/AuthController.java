@@ -20,8 +20,8 @@ public class AuthController {
         this.authService.authenticateEmailForSignup(emailAuthRequestDto);
     }
 
-    @PostMapping("/auth/login")
-    public ResponseEntity<AccessTokenResponseDto> login(@RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
+    @PostMapping("/login")
+    public ResponseEntity<AccessTokenResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
+        return ResponseEntity.ok(this.authService.login(request));
     }
 }
