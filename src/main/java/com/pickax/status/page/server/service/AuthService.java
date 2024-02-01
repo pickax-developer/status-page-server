@@ -14,29 +14,49 @@ import com.pickax.status.page.server.domain.model.Component;
 import com.pickax.status.page.server.domain.model.Site;
 import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.request.UserResignRequestDto;
+import com.pickax.status.page.server.domain.model.EmailAuthentication;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
+import com.pickax.status.page.server.repository.EmailAuthenticationRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.repository.UserRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
-	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
 	private final SiteRepository siteRepository;
+	private final EmailAuthenticationRepository emailAuthenticationRepository;
+
 	private final EmailService emailService;
+
+	private final PasswordEncoder passwordEncoder;
 
 	@Transactional
 	public void authenticateEmailForSignup(EmailAuthRequestDto emailAuthRequestDto) {
-		userRepository.getUser(emailAuthRequestDto.getEmail(), UserStatus.JOIN).ifPresent(user -> {
+		String requestEmail = emailAuthRequestDto.getEmail();
+		userRepository.getUser(requestEmail, UserStatus.JOIN).ifPresent(user -> {
 			throw new CustomException(ErrorCode.DUPLICATE_USER);
 		});
 
-		emailService.sendEmailAuthenticationCodeForSignup(emailAuthRequestDto.getEmail());
+		cleanAllEmailAuthenticationByEmail(requestEmail);
+
+		String code = RandomStringUtils.randomNumeric(6);
+
+		emailAuthenticationRepository.save(EmailAuthentication.create(requestEmail, code, LocalDateTime.now().plusMinutes(10)));
+		emailService.sendEmailAuthenticationCodeForSignup(requestEmail, code);
+	}
+
+	private void cleanAllEmailAuthenticationByEmail(String email) {
+		List<EmailAuthentication> emailAuthentications = emailAuthenticationRepository.findAllByEmail(email);
+		if (!emailAuthentications.isEmpty()) {
+			emailAuthenticationRepository.deleteAll(emailAuthentications);
+		}
 	}
 
 	@Transactional
