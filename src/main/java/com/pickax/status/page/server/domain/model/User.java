@@ -32,4 +32,11 @@ public class User {
 
     @Column(name = "withdrawal_at")
     private LocalDateTime withdrawalDate;
+
+    public void delete() {
+        email = "";
+        password = "";
+        status = UserStatus.WITHDRAWAL;
+        withdrawalDate = LocalDateTime.now();
+    }
 }

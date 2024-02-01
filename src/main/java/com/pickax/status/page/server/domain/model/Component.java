@@ -73,4 +73,8 @@ public class Component {
 			this.componentStatus = changedComponentStatus;
 		}
 	}
+
+	public void deactivate() {
+		isActive = false;
+	}
 }

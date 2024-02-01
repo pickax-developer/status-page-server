@@ -89,4 +89,8 @@ public class Site {
 	public boolean ownerEqualsBy(Long requesterId) {
 		return this.getUser().getId().equals(requesterId);
 	}
+
+	public void cancel() {
+		siteRegistrationStatus = SiteRegistrationStatus.CANCELED;
+	}
 }
