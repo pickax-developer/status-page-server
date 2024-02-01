@@ -39,6 +39,7 @@ public class AuthService {
 		emailService.sendEmailAuthenticationCodeForSignup(emailAuthRequestDto.getEmail());
 	}
 
+	@Transactional
 	public void resign(UserResignRequestDto userResignRequestDto) {
 		// TODO SecurityContextHolder 완료되면 추가
 		// Long userId = SecurityUtil.getCurrentUserId();
