@@ -1,6 +1,5 @@
 package com.pickax.status.page.server.repository;
 
-import com.pickax.status.page.server.domain.model.QSite;
 import com.pickax.status.page.server.domain.model.Site;
 import com.pickax.status.page.server.dto.reseponse.site.QSiteResponseDto;
 import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;

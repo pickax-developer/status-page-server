@@ -66,6 +66,9 @@ dependencies {
 
     // slack
     implementation 'com.slack.api:slack-api-client:1.25.1'
+
+    // utility
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 }
 
 tasks.named('test') {
