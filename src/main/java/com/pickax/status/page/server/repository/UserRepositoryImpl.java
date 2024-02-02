@@ -28,4 +28,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                         .fetchOne()
         );
     }
+
+    @Override
+    public Optional<User> getUserById(Long id, UserStatus status) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(user)
+                        .where(
+                                user.id.eq(id),
+                                user.status.eq(status)
+                        )
+                        .fetchOne()
+        );
+    }
 }

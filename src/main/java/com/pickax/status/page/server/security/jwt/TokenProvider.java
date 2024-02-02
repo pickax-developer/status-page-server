@@ -26,7 +26,7 @@ public class TokenProvider implements Serializable {
 	@Value("${security.jwt-config.access-token-expire}")
 	private long accessTokenExpireTime;
 
-	public AccessTokenResponseDto createAccessToken(Authentication authentication) {
+	public AccessTokenResponseDto createAccessToken(Long userId) {
 		Date now = new Date();
 		Map<String, Object> headers = new HashMap<>();
 		headers.put("typ", "JWT");
@@ -37,7 +37,7 @@ public class TokenProvider implements Serializable {
 		log.info("[CREATE_ACCESS_TOKEN] - NOW: {}, EXP: {}", now, accessTokenExpiresIn);
 
 		String accessToken = Jwts.builder()
-				.setSubject(authentication.getName())
+				.setSubject(userId.toString())
 				.setHeader(headers)
 				.setIssuer(ISS)
 				.setIssuedAt(now)
@@ -80,7 +80,7 @@ public class TokenProvider implements Serializable {
 		return new UsernamePasswordAuthenticationToken(principal, "", null);
 	}
 
-	private Claims parseClaims(String accessToken) {
+	Claims parseClaims(String accessToken) {
 		try {
 			return Jwts
 					.parserBuilder()

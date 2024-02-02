@@ -2,6 +2,7 @@ package com.pickax.status.page.server.security.config;
 
 import java.util.Collections;
 
+import com.pickax.status.page.server.service.UserVerificationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,9 +30,10 @@ public class SecurityConfig {
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final TokenProvider tokenProvider;
+	private final UserVerificationService userVerificationService;
 
 	private JwtFilter jwtFilter() {
-		return new JwtFilter(tokenProvider);
+		return new JwtFilter(tokenProvider, userVerificationService);
 	}
 
 	@Bean
