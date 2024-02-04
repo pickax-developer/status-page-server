@@ -32,4 +32,12 @@ public class EmailAuthentication {
 	public static EmailAuthentication create(String email, String code, LocalDateTime expirationDate) {
 		return new EmailAuthentication(email, code, expirationDate);
 	}
+
+	public boolean verify(String code) {
+		return this.code.equals(code);
+	}
+
+	public boolean isExpired() {
+		return LocalDateTime.now().isAfter(expirationDate);
+	}
 }
