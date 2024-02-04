@@ -4,6 +4,7 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
+import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
+import com.pickax.status.page.server.security.jwt.TokenProvider;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -36,6 +40,26 @@ class SiteControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private TokenProvider tokenProvider;
+
+	private AccessTokenResponseDto accessTokenResponseDto;
+
+	private String getAuthorizationBearerToken(AccessTokenResponseDto accessTokenResponseDto) {
+		return "Bearer " + accessTokenResponseDto.getAccessToken();
+	}
+
+	@BeforeAll
+	void setUp() {
+		userSetup();
+	}
+
+	void userSetup() {
+		Long userId = 1L;
+		String email = "user1@ruu.kr";
+		accessTokenResponseDto = tokenProvider.createAccessToken(userId);
+	}
 
 	@Test
 	@DisplayName("POST site 등록 api - 200 OK")
@@ -55,6 +79,7 @@ class SiteControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(siteCreateRequestDto))
 					.accept(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -73,6 +98,7 @@ class SiteControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -91,6 +117,7 @@ class SiteControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -108,18 +135,19 @@ class SiteControllerTest {
 
 		mockMvc.perform(
 				MockMvcRequestBuilders
-						.get(url)
-						.contentType(MediaType.APPLICATION_JSON)
-		)
-				.andDo(print())
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
+			)
+			.andDo(print())
 
-				// then
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(1))
-				.andExpect(jsonPath("$.name").value("1 name"))
-				.andExpect(jsonPath("$.description").value("1 description"))
-				.andExpect(jsonPath("$.url").value("http://dasfas"))
-				.andExpect(jsonPath("$.status").value("COMPLETED"));
+			// then
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1))
+			.andExpect(jsonPath("$.name").value("1 name"))
+			.andExpect(jsonPath("$.description").value("1 description"))
+			.andExpect(jsonPath("$.url").value("http://dasfas"))
+			.andExpect(jsonPath("$.status").value("COMPLETED"));
 	}
 
 	@Test
@@ -130,13 +158,14 @@ class SiteControllerTest {
 
 		mockMvc.perform(
 				MockMvcRequestBuilders
-						.get(url)
-						.contentType(MediaType.APPLICATION_JSON)
-		)
-				.andDo(print())
+					.get(url)
+					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
+			)
+			.andDo(print())
 
-				// then
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
+			// then
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.customError").value(NOT_FOUND_SITE.name()));
 	}
 }

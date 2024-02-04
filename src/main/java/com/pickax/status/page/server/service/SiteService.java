@@ -1,5 +1,7 @@
 package com.pickax.status.page.server.service;
 
+import static com.pickax.status.page.server.common.exception.ErrorCode.*;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -9,9 +11,11 @@ import java.util.UUID;
 
 import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
+import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.reseponse.site.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
 import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,11 +29,12 @@ import com.pickax.status.page.server.repository.MetaTagRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.site.SiteCreateResponseDto;
+import com.pickax.status.page.server.repository.UserRepository;
+import com.pickax.status.page.server.util.SecurityUtil;
 
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 
-import static com.pickax.status.page.server.common.exception.ErrorCode.NOT_FOUND_SITE;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +44,17 @@ public class SiteService {
 
 	private final SiteRepository siteRepository;
 	private final MetaTagRepository metaTagRepository;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public SiteCreateResponseDto createSite(SiteCreateRequestDto siteCreateRequestDto) {
+		Long userId = SecurityUtil.getCurrentUserId();
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+
 		String secretKey = createSecretKey();
-		Site site = Site.of(siteCreateRequestDto, secretKey);
+		Site site = Site.of(siteCreateRequestDto, secretKey, user);
 
 		MetaTag metaTag = createMetaTag();
 		site.addMetaTag(metaTag);
@@ -70,14 +81,14 @@ public class SiteService {
 	@Transactional
 	public void verifySite(long siteId) {
 		Site site = siteRepository.findById(siteId)
-				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
+			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		if (!site.isUnverified()) {
 			throw new CustomException(ErrorCode.INVALID_UNVERIFIED_SITE);
 		}
 
 		MetaTag metaTag = metaTagRepository.findFirstBySite_Id(siteId)
-				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
 
 		checkMetaTag(site, metaTag);
 	}
@@ -105,8 +116,8 @@ public class SiteService {
 
 		Elements metaTags = doc.head().getElementsByTag("meta");
 
-		for(Element meta: metaTags) {
-			if(meta.attr("name").equals(META_TAG_NAME)){
+		for (Element meta : metaTags) {
+			if (meta.attr("name").equals(META_TAG_NAME)) {
 				if (metaTag.isSameAs(meta.attr("content"))) {
 					site.complete();
 					metaTag.check();
@@ -120,23 +131,24 @@ public class SiteService {
 
 	/**
 	 * TODO. 로그인 API 붙일 때 유저아이디로 조회
+	 *
 	 * @param loggedInUserId
 	 * @return
 	 */
 	public List<DefaultSite> findAllByUserId(Long loggedInUserId) {
-//		List<Site> sitesFromRepository = this.siteRepository.findAllByUserId(loggedInUserId);
+		//		List<Site> sitesFromRepository = this.siteRepository.findAllByUserId(loggedInUserId);
 		List<Site> sitesFromRepository = this.siteRepository.findAll();
 		List<DefaultSite> sites = new ArrayList<>();
 
 		sitesFromRepository.forEach(
-				site -> {
-					sites.add(DefaultSite.builder()
-							.id(site.getId())
-							.name(site.getName())
-							.url(site.getUrl())
-							.ownerProofStatus(site.getSiteRegistrationStatus())
-							.build());
-				}
+			site -> {
+				sites.add(DefaultSite.builder()
+					.id(site.getId())
+					.name(site.getName())
+					.url(site.getUrl())
+					.ownerProofStatus(site.getSiteRegistrationStatus())
+					.build());
+			}
 		);
 
 		return sites;
@@ -144,16 +156,16 @@ public class SiteService {
 
 	public MetaTagValidation findValidMetaTag(Long siteId) {
 		Site site = this.siteRepository.findById(siteId)
-				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
+			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		if (site.hasValidatedOwnerByMetaTag()) {
 			throw new CustomException(ErrorCode.INVALID_COMPLETED_SITE);
 		}
 
 		MetaTag metaTagNotYetChecked = this.metaTagRepository.findMetaTagNotYetCheckedBySiteId(siteId, false)
-				.stream()
-				.findFirst()
-				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
+			.stream()
+			.findFirst()
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_META_TAG));
 
 		return new MetaTagValidation(metaTagNotYetChecked.getId(), metaTagNotYetChecked.getContent());
 	}
@@ -169,6 +181,6 @@ public class SiteService {
 	@Transactional(readOnly = true)
 	public SiteResponseDto getSite(long siteId) {
 		return siteRepository.getSiteResponse(siteId)
-				.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
+			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 	}
 }

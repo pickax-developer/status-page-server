@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ import com.pickax.status.page.server.repository.UserRepository;
 
 import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
 import com.pickax.status.page.server.security.jwt.TokenProvider;
+import com.pickax.status.page.server.util.SecurityUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -72,9 +76,8 @@ public class AuthService {
 
 	@Transactional
 	public void resign(UserResignRequestDto userResignRequestDto) {
-		// TODO SecurityContextHolder 완료되면 추가
-		// Long userId = SecurityUtil.getCurrentUserId();
-		Long userId = 1L;
+		Long userId = SecurityUtil.getCurrentUserId();
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
 

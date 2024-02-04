@@ -62,16 +62,17 @@ public class Site {
 		metaTag.updateSite(this);
 	}
 
-	private Site(SiteCreateRequestDto siteCreateRequestDto, String secretKey) {
+	private Site(SiteCreateRequestDto siteCreateRequestDto, String secretKey, User user) {
 		this.name = siteCreateRequestDto.name();
 		this.description = siteCreateRequestDto.description();
 		this.url = siteCreateRequestDto.url();
 		this.siteRegistrationStatus = SiteRegistrationStatus.UNVERIFIED;
 		this.secretKey = secretKey;
+		this.user = user;
 	}
 
-	public static Site of(SiteCreateRequestDto siteCreateRequestDto, String secretKey) {
-		return new Site(siteCreateRequestDto, secretKey);
+	public static Site of(SiteCreateRequestDto siteCreateRequestDto, String secretKey, User user) {
+		return new Site(siteCreateRequestDto, secretKey, user);
 	}
 
 	public boolean isUnverified() {
