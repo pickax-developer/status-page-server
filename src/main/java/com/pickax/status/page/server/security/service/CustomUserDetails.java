@@ -2,6 +2,7 @@ package com.pickax.status.page.server.security.service;
 
 import java.util.Collection;
 
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,16 +12,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
+
 	private final Long id;
-	// TODO
-	// private final String nickname;
-	// private final String email;
+
+	private final String password;
+
 
 	public static CustomUserDetails of(User user) {
 		return new CustomUserDetails(
-			user.getId()
+				user.getId(),
+				user.getPassword()
 		);
 	}
 
@@ -31,7 +35,7 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return null;
+		return this.password;
 	}
 
 	@Override
@@ -41,21 +45,21 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 }

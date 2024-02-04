@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface UserRepositoryCustom {
 	Optional<User> getUser(String email, UserStatus status);
+
+	Optional<User> getUserById(Long id, UserStatus status);
 }

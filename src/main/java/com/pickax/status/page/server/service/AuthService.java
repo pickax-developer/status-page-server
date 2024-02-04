@@ -18,16 +18,21 @@ import com.pickax.status.page.server.domain.model.Site;
 import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.request.UserResignRequestDto;
 import com.pickax.status.page.server.domain.model.EmailAuthentication;
+import com.pickax.status.page.server.dto.request.LoginRequestDto;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
 import com.pickax.status.page.server.repository.EmailAuthenticationRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.repository.UserRepository;
 
+import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
+import com.pickax.status.page.server.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -36,10 +41,9 @@ public class AuthService {
 	private final EmailAuthenticationRepository emailAuthenticationRepository;
 
 	private final EmailService emailService;
-
-	private final ApplicationEventPublisher eventPublisher;
-
-	private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
 	@Transactional
 	public void authenticateEmailForSignup(EmailAuthRequestDto emailAuthRequestDto) {
@@ -94,4 +98,19 @@ public class AuthService {
 		site.cancel();
 		site.getComponents().forEach(Component::deactivate);
 	}
+
+    @Transactional
+    public AccessTokenResponseDto login(LoginRequestDto request) {
+        User user = userRepository.getUser(request.getEmail(), UserStatus.JOIN)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        verifyPassword(request.getPassword(), user.getPassword());
+
+        return tokenProvider.createAccessToken(user.getId());
+    }
+
+    private void verifyPassword(String inputPassword, String password) {
+        if (!passwordEncoder.matches(inputPassword, password)) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
+    }
 }

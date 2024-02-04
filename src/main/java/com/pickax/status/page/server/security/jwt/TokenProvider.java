@@ -6,14 +6,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
+import com.pickax.status.page.server.security.service.CustomUserDetails;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class TokenProvider implements Serializable {
 	@Value("${security.jwt-config.access-token-expire}")
 	private long accessTokenExpireTime;
 
-	public String createAccessToken() {
+	public AccessTokenResponseDto createAccessToken(Long userId) {
 		Date now = new Date();
 		Map<String, Object> headers = new HashMap<>();
 		headers.put("typ", "JWT");
@@ -35,18 +36,24 @@ public class TokenProvider implements Serializable {
 
 		log.info("[CREATE_ACCESS_TOKEN] - NOW: {}, EXP: {}", now, accessTokenExpiresIn);
 
-		return Jwts.builder()
-			.setHeader(headers)
-			.setIssuer(ISS)
-			.setIssuedAt(now)
-			.setExpiration(accessTokenExpiresIn)
-			.signWith(SignatureAlgorithm.HS256, getJwtSecret())
-			.compact();
+		String accessToken = Jwts.builder()
+				.setSubject(userId.toString())
+				.setHeader(headers)
+				.setIssuer(ISS)
+				.setIssuedAt(now)
+				.setExpiration(accessTokenExpiresIn)
+				.signWith(SignatureAlgorithm.HS256, getJwtSecret())
+				.compact();
+
+		return AccessTokenResponseDto.builder()
+				.accessToken(accessToken)
+				.accessTokenExpiresIn(accessTokenExpiresIn)
+				.build();
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token);
+			Jwts.parserBuilder().setSigningKey(getJwtSecret()).build().parseClaimsJws(token);
 			return true;
 		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
 			log.info("Invalid JWT token: {}", e.getMessage());
@@ -66,4 +73,23 @@ public class TokenProvider implements Serializable {
 		return Base64.getEncoder().encodeToString(secret.getBytes());
 	}
 
+	public Authentication getAuthentication(String accessToken) {
+		Claims claims = parseClaims(accessToken);
+
+		UserDetails principal = new CustomUserDetails(Long.parseLong(claims.getSubject()), "");
+		return new UsernamePasswordAuthenticationToken(principal, "", null);
+	}
+
+	Claims parseClaims(String accessToken) {
+		try {
+			return Jwts
+					.parserBuilder()
+					.setSigningKey(getJwtSecret())
+					.build()
+					.parseClaimsJws(accessToken)
+					.getBody();
+		} catch (ExpiredJwtException e) {
+			return e.getClaims();
+		}
+	}
 }

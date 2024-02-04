@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pickax.status.page.server.dto.request.UserResignRequestDto;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
+import com.pickax.status.page.server.dto.request.LoginRequestDto;
+import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
 import com.pickax.status.page.server.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -30,4 +32,9 @@ public class AuthController {
 		authService.resign(userResignRequestDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
+    @PostMapping("/login")
+    public ResponseEntity<AccessTokenResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
+        return ResponseEntity.ok(this.authService.login(request));
+    }
 }
