@@ -1,5 +1,7 @@
 package com.pickax.status.page.server.service;
 
+import static com.pickax.status.page.server.common.exception.ErrorCode.*;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -9,13 +11,18 @@ import java.util.UUID;
 
 import com.pickax.status.page.server.common.exception.CustomException;
 import com.pickax.status.page.server.common.exception.ErrorCode;
+import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.reseponse.site.DefaultSite;
 import com.pickax.status.page.server.dto.reseponse.MetaTagValidation;
 import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;
+
+import org.apache.catalina.security.SecurityUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.pickax.status.page.server.domain.model.MetaTag;
@@ -25,11 +32,10 @@ import com.pickax.status.page.server.repository.MetaTagRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.dto.request.SiteCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.site.SiteCreateResponseDto;
+import com.pickax.status.page.server.repository.UserRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-
-import static com.pickax.status.page.server.common.exception.ErrorCode.NOT_FOUND_SITE;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +45,18 @@ public class SiteService {
 
 	private final SiteRepository siteRepository;
 	private final MetaTagRepository metaTagRepository;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public SiteCreateResponseDto createSite(SiteCreateRequestDto siteCreateRequestDto) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long userId = Long.parseLong(authentication.getName());
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+
 		String secretKey = createSecretKey();
-		Site site = Site.of(siteCreateRequestDto, secretKey);
+		Site site = Site.of(siteCreateRequestDto, secretKey, user);
 
 		MetaTag metaTag = createMetaTag();
 		site.addMetaTag(metaTag);

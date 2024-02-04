@@ -5,6 +5,8 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,9 +71,9 @@ public class AuthService {
 
 	@Transactional
 	public void resign(UserResignRequestDto userResignRequestDto) {
-		// TODO SecurityContextHolder 완료되면 추가
-		// Long userId = SecurityUtil.getCurrentUserId();
-		Long userId = 1L;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long userId = Long.parseLong(authentication.getName());
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
 
