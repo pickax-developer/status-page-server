@@ -28,6 +28,8 @@ import com.pickax.status.page.server.repository.UserRepository;
 
 import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
 import com.pickax.status.page.server.security.jwt.TokenProvider;
+import com.pickax.status.page.server.util.SecurityUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -71,8 +73,7 @@ public class AuthService {
 
 	@Transactional
 	public void resign(UserResignRequestDto userResignRequestDto) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Long userId = Long.parseLong(authentication.getName());
+		Long userId = SecurityUtil.getCurrentUserId();
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_USER));
