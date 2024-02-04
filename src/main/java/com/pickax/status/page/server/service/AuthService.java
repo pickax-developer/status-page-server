@@ -4,6 +4,7 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import com.pickax.status.page.server.dto.request.auth.SignupRequestDto;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,16 +51,17 @@ public class AuthService {
 	@Transactional
 	public void sendEmailAuthenticationCodeForSignup(EmailAuthSendRequestDto emailAuthSendRequestDto) {
 		String requestEmail = emailAuthSendRequestDto.getEmail();
-		userRepository.getUser(requestEmail, UserStatus.JOIN).ifPresent(user -> {
-			throw new CustomException(ErrorCode.DUPLICATE_USER);
-		});
-
+		checkDuplicatedUser(requestEmail);
 		cleanAllEmailAuthenticationByEmail(requestEmail);
-
 		String code = RandomStringUtils.randomNumeric(6);
-
 		emailAuthenticationRepository.save(EmailAuthentication.create(requestEmail, code, LocalDateTime.now().plusMinutes(10)));
 		emailService.sendEmailAuthenticationCodeForSignup(requestEmail, code);
+	}
+
+	private void checkDuplicatedUser(String email) {
+		userRepository.getUser(email, UserStatus.JOIN).ifPresent(user -> {
+			throw new CustomException(ErrorCode.DUPLICATE_USER);
+		});
 	}
 
 	private void cleanAllEmailAuthenticationByEmail(String email) {
@@ -105,10 +106,14 @@ public class AuthService {
 
 	@Transactional(readOnly = true)
 	public void verifyEmailAuthenticationCodeForSignup(EmailAuthVerifyRequestDto emailAuthVerifyRequestDto) {
-		EmailAuthentication emailAuthentication = emailAuthenticationRepository.findFirst1ByEmail(emailAuthVerifyRequestDto.getEmail())
+		verifyEmailAuthenticationCodeForSignup(emailAuthVerifyRequestDto.getEmail(), emailAuthVerifyRequestDto.getCode());
+	}
+
+	private void verifyEmailAuthenticationCodeForSignup(String email, String code) {
+		EmailAuthentication emailAuthentication = emailAuthenticationRepository.findFirst1ByEmail(email)
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AUTHENTICATION_CODE));
 
-		if (!emailAuthentication.verify(emailAuthVerifyRequestDto.getCode())) {
+		if (!emailAuthentication.verify(code)) {
 			throw new CustomException(ErrorCode.INVALID_AUTHENTICATION_CODE);
 		}
 
@@ -131,4 +136,15 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
     }
+
+	@Transactional
+	public void signup(SignupRequestDto signupRequestDto) {
+		String email = signupRequestDto.getEmail();
+		checkDuplicatedUser(email);
+		verifyEmailAuthenticationCodeForSignup(email, signupRequestDto.getCode());
+		userRepository.save(User.create(email, passwordEncoder.encode(signupRequestDto.getPassword())));
+
+		emailService.sendSignupEmail(email);
+		cleanAllEmailAuthenticationByEmail(email);
+	}
 }

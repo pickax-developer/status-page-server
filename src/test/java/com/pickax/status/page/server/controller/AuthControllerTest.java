@@ -3,6 +3,7 @@ package com.pickax.status.page.server.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthSendRequestDto;
 import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
+import com.pickax.status.page.server.dto.request.auth.SignupRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -157,5 +158,151 @@ class AuthControllerTest {
                 // then
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.customError").value(INVALID_AUTHENTICATION_CODE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 요청 성공 200 OK")
+    void signup() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("validuser1@ruu.kr", "User123!", "098677");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 존재하지 않는 email 인증 정보일 경우 404 NOT_FOUND")
+    void signupByNonExistentEmail() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("nonexistentuser@ruu.kr", "User123!", "098677");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.customError").value(NOT_FOUND_AUTHENTICATION_CODE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 인증 번호의 유효 기간이 지난 경우 404 NOT_FOUND")
+    void signupOnExpiredDate() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("invaliduser2@ruu.kr", "User123!", "345334");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.customError").value(NOT_FOUND_AUTHENTICATION_CODE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 비밀번호의 길이가 최소 길이보다 미만인 경우 400 BAD_REQUEST")
+    void signupByShorterPassword() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("validuser1@ruu.kr", "User12!", "123456");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customError").value(INVALID_INPUT_VALUE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 비밀번호의 길이가 최대 길이를 초과한 경우 400 BAD_REQUEST")
+    void signupByLongerPassword() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("validuser1@ruu.kr", "IAmUserHaha1234!#", "123456");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customError").value(INVALID_INPUT_VALUE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 비밀번호에 필수 사항이 누락된 경우 400 BAD_REQUEST")
+    void signupByPasswordMissingRequirements() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("validuser1@ruu.kr", "User1234", "123456");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customError").value(INVALID_INPUT_VALUE.name()));
+    }
+
+    @Test
+    @DisplayName("POST 회원가입 - 비밀번호에 허용되지 않은 기호가 포함된 경우 400 BAD_REQUEST")
+    void signupByPasswordContainingDisallowedSymbols() throws Exception {
+        // given
+        String url = "/auth/signup";
+        SignupRequestDto requestDto = new SignupRequestDto("validuser1@ruu.kr", "User1234*", "123456");
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+
+                // then
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customError").value(INVALID_INPUT_VALUE.name()));
     }
 }

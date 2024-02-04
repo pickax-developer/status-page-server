@@ -63,4 +63,19 @@ public class EmailService {
             .to(userResignEvent.email())
             .build();
     }
+
+    public void sendSignupEmail(String email) {
+        MailMessageContext messageContext = createSignupEmailContext(email);
+        emailSender.send(messageContext);
+    }
+
+    private MailMessageContext createSignupEmailContext(String email) {
+        Context context = new Context();
+        context.setVariable("receiverEmail", email);
+        return MailMessageContext.builder()
+                .context(context)
+                .mailType(Mail.USER_SIGNUP)
+                .to(email)
+                .build();
+    }
 }
