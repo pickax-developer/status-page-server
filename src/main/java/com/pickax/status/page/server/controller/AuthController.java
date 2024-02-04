@@ -2,6 +2,7 @@ package com.pickax.status.page.server.controller;
 
 import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
 import com.pickax.status.page.server.service.AuthService;
+import com.pickax.status.page.server.dto.request.auth.SignupRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,12 @@ public class AuthController {
 	@PostMapping("/email-auth/verify")
 	public ResponseEntity<Void> verifyEmailAuthenticationCodeForSignup(@RequestBody @Valid EmailAuthVerifyRequestDto emailAuthVerifyRequestDto) {
 		this.authService.verifyEmailAuthenticationCodeForSignup(emailAuthVerifyRequestDto);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/signup")
+	public ResponseEntity<Void> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+		this.authService.signup(signupRequestDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
