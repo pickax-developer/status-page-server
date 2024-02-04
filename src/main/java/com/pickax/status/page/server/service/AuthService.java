@@ -80,9 +80,10 @@ public class AuthService {
 		}
 
 		List<Site> sites = siteRepository.findByUserId(userId);
-		delete(user, sites);
 
 		eventPublisher.publishEvent(new UserResignEvent(user.getEmail()));
+
+		delete(user, sites);
 	}
 
 	private void delete(User user, List<Site> sites) {
