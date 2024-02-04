@@ -3,12 +3,14 @@ package com.pickax.status.page.server.common.email;
 import com.pickax.status.page.server.domain.enumclass.Mail;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.thymeleaf.context.Context;
 
 import java.util.Locale;
 
 @Getter
 @Builder
+@ToString
 public class MailMessageContext {
 	private final Context context;
 	private final Mail mailType;

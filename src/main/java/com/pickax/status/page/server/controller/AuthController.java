@@ -1,17 +1,15 @@
 package com.pickax.status.page.server.controller;
 
+import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
+import com.pickax.status.page.server.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pickax.status.page.server.dto.request.UserResignRequestDto;
-import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
 import com.pickax.status.page.server.dto.request.LoginRequestDto;
 import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
-import com.pickax.status.page.server.service.AuthService;
+import com.pickax.status.page.server.dto.request.auth.EmailAuthSendRequestDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +21,15 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/email-auth")
-	public void authenticateEmailForSignup(@RequestBody @Valid EmailAuthRequestDto emailAuthRequestDto) {
-		this.authService.authenticateEmailForSignup(emailAuthRequestDto);
+	public ResponseEntity<Void> sendEmailAuthenticationCodeForSignup(@RequestBody @Valid EmailAuthSendRequestDto emailAuthSendRequestDto) {
+		this.authService.sendEmailAuthenticationCodeForSignup(emailAuthSendRequestDto);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/email-auth/verify")
+	public ResponseEntity<Void> verifyEmailAuthenticationCodeForSignup(@RequestBody @Valid EmailAuthVerifyRequestDto emailAuthVerifyRequestDto) {
+		this.authService.verifyEmailAuthenticationCodeForSignup(emailAuthVerifyRequestDto);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PostMapping("/resign")

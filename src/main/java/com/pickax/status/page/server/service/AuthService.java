@@ -4,6 +4,7 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import com.pickax.status.page.server.dto.request.auth.EmailAuthVerifyRequestDto;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import com.pickax.status.page.server.domain.model.User;
 import com.pickax.status.page.server.dto.request.UserResignRequestDto;
 import com.pickax.status.page.server.domain.model.EmailAuthentication;
 import com.pickax.status.page.server.dto.request.LoginRequestDto;
-import com.pickax.status.page.server.dto.request.auth.EmailAuthRequestDto;
+import com.pickax.status.page.server.dto.request.auth.EmailAuthSendRequestDto;
 import com.pickax.status.page.server.repository.EmailAuthenticationRepository;
 import com.pickax.status.page.server.repository.SiteRepository;
 import com.pickax.status.page.server.repository.UserRepository;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,13 +43,14 @@ public class AuthService {
 	private final EmailAuthenticationRepository emailAuthenticationRepository;
 
 	private final EmailService emailService;
+
     private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
 	@Transactional
-	public void authenticateEmailForSignup(EmailAuthRequestDto emailAuthRequestDto) {
-		String requestEmail = emailAuthRequestDto.getEmail();
+	public void sendEmailAuthenticationCodeForSignup(EmailAuthSendRequestDto emailAuthSendRequestDto) {
+		String requestEmail = emailAuthSendRequestDto.getEmail();
 		userRepository.getUser(requestEmail, UserStatus.JOIN).ifPresent(user -> {
 			throw new CustomException(ErrorCode.DUPLICATE_USER);
 		});
@@ -98,6 +101,20 @@ public class AuthService {
 	private void cancelSiteAndDeactivateComponents(Site site) {
 		site.cancel();
 		site.getComponents().forEach(Component::deactivate);
+	}
+
+	@Transactional(readOnly = true)
+	public void verifyEmailAuthenticationCodeForSignup(EmailAuthVerifyRequestDto emailAuthVerifyRequestDto) {
+		EmailAuthentication emailAuthentication = emailAuthenticationRepository.findFirst1ByEmail(emailAuthVerifyRequestDto.getEmail())
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AUTHENTICATION_CODE));
+
+		if (!emailAuthentication.verify(emailAuthVerifyRequestDto.getCode())) {
+			throw new CustomException(ErrorCode.INVALID_AUTHENTICATION_CODE);
+		}
+
+		if (emailAuthentication.isExpired()) {
+			throw new CustomException(ErrorCode.NOT_FOUND_AUTHENTICATION_CODE);
+		}
 	}
 
     @Transactional
