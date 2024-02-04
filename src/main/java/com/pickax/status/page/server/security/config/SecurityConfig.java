@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -34,6 +35,11 @@ public class SecurityConfig {
 
 	private JwtFilter jwtFilter() {
 		return new JwtFilter(tokenProvider, userVerificationService);
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -71,7 +77,7 @@ public class SecurityConfig {
 
 			// 허용 설정
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/sites/**", "/components/**", "/health-check/**", "/auth/login").permitAll()
+				.requestMatchers("/sites/**", "/components/**", "/health-check/**", "/auth/**").permitAll()
 				.anyRequest().authenticated()
 			)
 
@@ -79,10 +85,5 @@ public class SecurityConfig {
 			.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-
-	@Bean
-	public static BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 }

@@ -1,6 +1,7 @@
 package com.pickax.status.page.server.common.event.handler;
 
 import com.pickax.status.page.server.common.event.ComponentStatusInspectedEvent;
+import com.pickax.status.page.server.common.event.UserResignEvent;
 import com.pickax.status.page.server.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,5 +19,11 @@ public class EmailEventHandler {
     public void sendEmail(ComponentStatusInspectedEvent event) {
         emailService.sendComponentStatusChangedNotifyEmail(event);
         log.debug("[{}-{}] 컴포넌트 상태 변경 메일 발송", event.getSiteName(), event.getComponentName());
+    }
+
+    @EventListener
+    public void userResignListener(UserResignEvent userResignEvent) {
+        emailService.sendUserResignEmail(userResignEvent);
+        log.info("[회원탈퇴 메일 Listener] email : {}", userResignEvent.email());
     }
 }
