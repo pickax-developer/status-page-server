@@ -129,15 +129,8 @@ public class SiteService {
 		throw new CustomException(ErrorCode.INVALID_META_TAG);
 	}
 
-	/**
-	 * TODO. 로그인 API 붙일 때 유저아이디로 조회
-	 *
-	 * @param loggedInUserId
-	 * @return
-	 */
 	public List<DefaultSite> findAllByUserId(Long loggedInUserId) {
-		//		List<Site> sitesFromRepository = this.siteRepository.findAllByUserId(loggedInUserId);
-		List<Site> sitesFromRepository = this.siteRepository.findAll();
+		List<Site> sitesFromRepository = this.siteRepository.findAllByUserId(loggedInUserId);
 		List<DefaultSite> sites = new ArrayList<>();
 
 		sitesFromRepository.forEach(

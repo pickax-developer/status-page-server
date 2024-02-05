@@ -2,6 +2,8 @@ package com.pickax.status.page.server.controller;
 
 import java.util.List;
 
+import com.pickax.status.page.server.util.SecurityUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.pickax.status.page.server.dto.request.ComponentCreateRequestDto;
 import com.pickax.status.page.server.dto.reseponse.component.ComponentListResponseDto;
@@ -28,9 +30,10 @@ public class ComponentController {
     private final ComponentService componentService;
 
     @PostMapping("/{siteId}/components")
-    public void createComponent(@PathVariable Long siteId, @RequestBody @Valid ComponentCreateRequestDto request) {
-        Long loggedInUserId = 1L;
-        this.componentService.createComponent(siteId, request, loggedInUserId);
+    public ResponseEntity<Void> createComponent(@PathVariable Long siteId, @RequestBody @Valid ComponentCreateRequestDto request) {
+		Long loggedInUserId = SecurityUtil.getCurrentUserId();
+		this.componentService.createComponent(siteId, request, loggedInUserId);
+		return new ResponseEntity<>(HttpStatus.OK);
     }
 
 	@GetMapping("/{siteId}/components/active")
