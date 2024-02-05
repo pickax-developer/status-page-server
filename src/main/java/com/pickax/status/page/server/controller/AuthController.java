@@ -38,8 +38,13 @@ public class AuthController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-    @PostMapping("/login")
-    public ResponseEntity<AccessTokenResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
-        return ResponseEntity.ok(this.authService.login(request));
-    }
+	@PostMapping("/login")
+	public ResponseEntity<AccessTokenResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
+		return ResponseEntity.ok(this.authService.login(request));
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }
