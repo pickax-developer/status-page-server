@@ -1,6 +1,7 @@
 package com.pickax.status.page.server.controller;
 
 import com.pickax.status.page.server.dto.reseponse.site.SiteResponseDto;
+import com.pickax.status.page.server.util.SecurityUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,9 +45,7 @@ public class SiteController {
 
 	@GetMapping
 	public ResponseEntity<List<DefaultSite>> sitesByUserId() {
-		// 로그인 기능이 없으므로 임시로 생성
-		Long loggedInUserId = 1L;
-
+		Long loggedInUserId = SecurityUtil.getCurrentUserId();
 		return ResponseEntity.ok(this.siteService.findAllByUserId(loggedInUserId));
 	}
 

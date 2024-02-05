@@ -42,4 +42,23 @@ public class SiteRepositoryImpl implements SiteRepositoryCustom {
             .where(site.user.id.eq(userId))
             .fetch();
     }
+
+    @Override
+    public Optional<Site> findBySiteIdAndUserId(Long siteId, Long userId) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(site)
+                .where(
+                        site.id.eq(siteId),
+                        site.user.id.eq(userId)
+                )
+                .fetchOne());
+    }
+
+    @Override
+    public List<Site> findAllByUserId(Long userId) {
+        return queryFactory
+                .selectFrom(site)
+                .where(site.user.id.eq(userId))
+                .fetch();
+    }
 }

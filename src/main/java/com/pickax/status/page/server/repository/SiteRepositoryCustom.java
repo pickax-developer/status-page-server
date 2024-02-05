@@ -10,4 +10,8 @@ public interface SiteRepositoryCustom {
 	Optional<SiteResponseDto> getSiteResponse(long siteId);
 
 	List<Site> findByUserId(Long userId);
+
+	Optional<Site> findBySiteIdAndUserId(Long siteId, Long userId);
+
+	List<Site> findAllByUserId(Long userId);
 }

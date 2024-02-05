@@ -31,11 +31,8 @@ public class ComponentService {
 
     @Transactional
     public void createComponent(Long siteId, ComponentCreateRequestDto request, Long loggedInUserId) {
-        Site site = this.siteRepository.findById(siteId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사이트 입니다."));
-        // 로그인 기능이 생기기 전까지 주석처리 합니다.
-//        if (!site.ownerEqualsBy(loggedInUserId)) {
-//            throw new IllegalArgumentException("해당 사이트의 정당한 소유자가 아닙니다.");
-//        }
+		Site site = this.siteRepository.findBySiteIdAndUserId(siteId, loggedInUserId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
 
         Component component = Component.create(request.getName(),
                 request.getDescription(),
