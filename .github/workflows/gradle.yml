@@ -57,7 +57,7 @@ jobs:
             
             docker build -t status-page-image .
 
-            docker run -d --name status-page-api -e SPRING_PROFILES_ACTIVE=$ACTIVE_PROFILE status-page-image:latest
+            docker run -d -p 8080:8080 --name status-page-api -e SPRING_PROFILES_ACTIVE=$ACTIVE_PROFILE status-page-image:latest
 
   test:
     if: github.event_name == 'pull_request'
