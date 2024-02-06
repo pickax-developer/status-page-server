@@ -43,21 +43,6 @@ jobs:
           key: ${{ secrets.QUACK_RUN_SSH_KEY }}
           port: ${{ secrets.QUACK_RUN_SSH_PORT }}
           script: |
-            SOURCE_DIR=source/build/libs
-            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-            PID=`ps -ef | grep java | grep status-page-server | grep -v "bash -c" | awk '{print $2}'`
-
-            echo "Old version of app is currently running on $PID."
-            echo "Filename of new version is $FILE_NAME."
-            echo "Directory: $SOURCE_DIR"
-
-            if [ -z "$PID" ]; then
-              echo "No process found."
-            else
-              echo "Terminating $PID..."
-              kill $PID
-            fi
-
             export DB_HOST=${{ secrets.DB_HOST }}
             export DB_USERNAME=${{ secrets.DB_USERNAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
@@ -65,11 +50,14 @@ jobs:
             export ACTIVE_PROFILE=${{ secrets.ACTIVE_PROFILE }}
             export MAIL_SENDER=${{ secrets.MAIL_SENDER }}
             export MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}
-
-            echo "env var $ACTIVE_PROFILE"
-
-            java -jar -Dspring.profiles.active=$ACTIVE_PROFILE $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
             
+            docker stop status-page-api || true
+            docker rm status-page-api || true
+            docker rmi status-page-image || true
+            
+            docker build -t status-page-image .
+
+            docker run -d --name status-page-api -e SPRING_PROFILES_ACTIVE=$ACTIVE_PROFILE status-page-image:latest
 
   test:
     if: github.event_name == 'pull_request'

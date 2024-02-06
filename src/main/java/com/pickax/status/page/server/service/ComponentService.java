@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.pickax.status.page.server.dto.reseponse.component.ComponentActiveResponseDto;
+import com.pickax.status.page.server.util.SecurityUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +49,8 @@ public class ComponentService {
 
 	@Transactional(readOnly = true)
 	public ComponentActiveListResponseDto getActiveComponents(Long siteId) {
-		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+		Long userId = SecurityUtil.getCurrentUserId();
+		siteRepository.findBySiteIdAndUserId(siteId, userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
 		List<ComponentActiveResponseDto> componentActiveResponses = componentRepository.getComponentActiveResponses(siteId);
 
 		final List<ComponentActiveResponseDto> notNullDates = componentActiveResponses.stream()
@@ -60,7 +63,8 @@ public class ComponentService {
 
 	@Transactional(readOnly = true)
 	public List<ComponentResponseDto> getComponents(Long siteId) {
-		siteRepository.findById(siteId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
+		Long userId = SecurityUtil.getCurrentUserId();
+		siteRepository.findBySiteIdAndUserId(siteId, userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SITE));
 		return componentRepository.getComponentResponses(siteId);
 	}
 }
