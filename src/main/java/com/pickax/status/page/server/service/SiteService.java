@@ -165,7 +165,8 @@ public class SiteService {
 
 	@Transactional(readOnly = true)
 	public SiteSecretKeyResponseDto getSecretKey(Long siteId) {
-		Site site = this.siteRepository.findById(siteId)
+		Long userId = SecurityUtil.getCurrentUserId();
+		Site site = this.siteRepository.findBySiteIdAndUserId(siteId, userId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		return SiteSecretKeyResponseDto.from(site.getSecretKey());
