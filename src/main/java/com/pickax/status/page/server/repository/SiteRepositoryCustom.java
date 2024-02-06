@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SiteRepositoryCustom {
-	Optional<SiteResponseDto> getSiteResponse(long siteId);
+	Optional<SiteResponseDto> getSiteResponse(long siteId, Long userId);
 
 	List<Site> findByUserId(Long userId);
 

@@ -19,7 +19,7 @@ public class SiteRepositoryImpl implements SiteRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<SiteResponseDto> getSiteResponse(long siteId) {
+    public Optional<SiteResponseDto> getSiteResponse(long siteId, Long userId) {
         return Optional.ofNullable(queryFactory
                 .select(new QSiteResponseDto(
                         site.id,
@@ -29,7 +29,9 @@ public class SiteRepositoryImpl implements SiteRepositoryCustom {
                         site.siteRegistrationStatus
                 ))
                 .from(site)
-                .where(site.id.eq(siteId))
+                .where(
+                        site.id.eq(siteId),
+                        site.user.id.eq(userId))
                 .fetchOne()
         );
     }

@@ -4,6 +4,9 @@ import static com.pickax.status.page.server.common.exception.ErrorCode.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.pickax.status.page.server.security.dto.AccessTokenResponseDto;
+import com.pickax.status.page.server.security.jwt.TokenProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -31,6 +35,26 @@ class ComponentControllerTest {
 	@Autowired
 	public MockMvc mockMvc;
 
+	@Autowired
+	private TokenProvider tokenProvider;
+
+	private AccessTokenResponseDto accessTokenResponseDto;
+
+	private String getAuthorizationBearerToken(AccessTokenResponseDto accessTokenResponseDto) {
+		return "Bearer " + accessTokenResponseDto.getAccessToken();
+	}
+
+	@BeforeAll
+	void setUp() {
+		userSetup();
+	}
+
+	void userSetup() {
+		Long userId = 1L;
+		String email = "user1@ruu.kr";
+		accessTokenResponseDto = tokenProvider.createAccessToken(userId);
+	}
+
 	@Test
 	@DisplayName("GET active component 리스트 조회 api - 200 OK")
 	void getActiveComponents() throws Exception {
@@ -42,6 +66,7 @@ class ComponentControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -62,6 +87,7 @@ class ComponentControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -81,6 +107,7 @@ class ComponentControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
@@ -100,6 +127,7 @@ class ComponentControllerTest {
 				MockMvcRequestBuilders
 					.get(url)
 					.contentType(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, getAuthorizationBearerToken(accessTokenResponseDto))
 			)
 			.andDo(print())
 
