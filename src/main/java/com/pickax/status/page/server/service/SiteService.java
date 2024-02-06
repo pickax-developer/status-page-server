@@ -80,7 +80,7 @@ public class SiteService {
 
 	@Transactional
 	public void verifySite(long siteId) {
-		Site site = siteRepository.findById(siteId)
+		Site site = siteRepository.findBySiteIdAndUserId(siteId, SecurityUtil.getCurrentUserId())
 			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 
 		if (!site.isUnverified()) {
@@ -173,7 +173,7 @@ public class SiteService {
 
 	@Transactional(readOnly = true)
 	public SiteResponseDto getSite(long siteId) {
-		return siteRepository.getSiteResponse(siteId)
+		return siteRepository.getSiteResponse(siteId, SecurityUtil.getCurrentUserId())
 			.orElseThrow(() -> new CustomException(NOT_FOUND_SITE));
 	}
 }

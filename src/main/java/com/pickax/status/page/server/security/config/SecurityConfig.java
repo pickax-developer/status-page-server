@@ -77,7 +77,13 @@ public class SecurityConfig {
 
 			// 허용 설정
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/sites/**", "/components/**", "/health-check/**", "/auth/**").permitAll()
+				.requestMatchers(
+						"/health-check/**",
+						"/auth/email-auth",
+						"/auth/email-auth/verify",
+						"/auth/signup",
+						"/auth/login")
+					.permitAll()
 				.anyRequest().authenticated()
 			)
 
