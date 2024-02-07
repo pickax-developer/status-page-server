@@ -33,8 +33,8 @@ jobs:
           key: ${{ secrets.QUACK_RUN_SSH_KEY }}
           port: ${{ secrets.QUACK_RUN_SSH_PORT }}
           source: "build/libs/*.jar"
-          target: "~"
-          rm: true
+          target: "/home/ec2-user"
+          rm: false
       - name: Deploy new version of server
         uses: appleboy/ssh-action@master
         with:
@@ -51,9 +51,9 @@ jobs:
             export MAIL_SENDER=${{ secrets.MAIL_SENDER }}
             export MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}
             
-            docker stop status-page-api || true
-            docker rm status-page-api || true
-            docker rmi status-page-image || true
+            docker stop status-page-api
+            docker rm status-page-api
+            docker rmi status-page-image
             
             docker build -t status-page-image .
 
