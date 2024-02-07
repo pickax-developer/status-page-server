@@ -33,7 +33,7 @@ jobs:
           key: ${{ secrets.QUACK_RUN_SSH_KEY }}
           port: ${{ secrets.QUACK_RUN_SSH_PORT }}
           source: "build/libs/*.jar"
-          target: "source"
+          target: "~"
           rm: true
       - name: Deploy new version of server
         uses: appleboy/ssh-action@master
