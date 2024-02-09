@@ -51,6 +51,10 @@ jobs:
             export MAIL_SENDER=${{ secrets.MAIL_SENDER }}
             export MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}
             
+            echo "DB_HOST: $DB_HOST"
+            echo "DB_USERNAME: $DB_USERNAME"
+            echo "DB_PASSWORD: $DB_PASSWORD"
+            
             docker stop status-page-api || true
             docker rm status-page-api || true
             docker rmi status-page-image || true
